@@ -1,0 +1,17 @@
+name: Waypoint wait ECS service stable
+description: "Wait for ECS service to stabilize and ELB target group to be healthy"
+inputs:
+  app:
+    description: ""
+    required: true
+  project:
+    description: ""
+    required: false
+    default: "cardstack"
+  waypoint-hcl:
+    description: ""
+    required: false
+    default: "waypoint.hcl"
+runs:
+  using: "node16"
+  main: "dist/index.js"
