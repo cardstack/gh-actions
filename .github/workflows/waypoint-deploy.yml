@@ -37,6 +37,7 @@ jobs:
         env:
           INPUT_ENVIRONMENT: ${{ inputs.environment }}
         run: |
+          echo "WAYPOINT_SERVER_TLS=1" >> $GITHUB_ENV
           if [ "$INPUT_ENVIRONMENT" = "production" ]; then
             echo "AWS_ROLE_ARN=arn:aws:iam::120317779495:role/waypoint" >> $GITHUB_ENV
             echo "WAYPOINT_SERVER_ADDR=${{ secrets.PRODUCTION_WAYPOINT_SERVER_ADDR }}" >> $GITHUB_ENV
@@ -64,8 +65,6 @@ jobs:
       - name: Deploy app
         run: waypoint deploy -app=${{ inputs.app }} -plain -local -release=false
         working-directory: ${{ inputs.working-directory }}
-        env:
-          WAYPOINT_SERVER_TLS: "1"
 
       - name: Wait service stable
         uses: cardstack/gh-actions/waypoint-wait-service-stable@feat/waypoint-wait-service-stable
@@ -75,8 +74,6 @@ jobs:
       - name: Release app
         run: waypoint release -app=${{ inputs.app }} -plain -local
         working-directory: ${{ inputs.working-directory }}
-        env:
-          WAYPOINT_SERVER_TLS: "1"
 
       - name: Send notification to Discord
         uses: cardstack/gh-actions/discord-notification-deploy@feat/waypoint-wait-service-stable
