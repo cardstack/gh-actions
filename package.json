@@ -1,0 +1,9 @@
+{
+  "name": "gh-actions",
+  "version": "1.0.0",
+  "scripts": {},
+  "license": "MIT",
+  "devDependencies": {
+    "esbuild": "^0.19.2"
+  }
+}
