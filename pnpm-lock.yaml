@@ -12,6 +12,15 @@ importers:
         specifier: ^0.19.2
         version: 0.19.2
 
+  fetch-stopped-ecs-task:
+    dependencies:
+      '@actions/core':
+        specifier: ^1.10.0
+        version: 1.10.0
+      hcl2-parser:
+        specifier: ^1.0.3
+        version: 1.0.3
+
   waypoint-wait-service-stable:
     dependencies:
       '@actions/core':

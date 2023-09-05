@@ -1,0 +1,13 @@
+{
+  "name": "fetch-stopped-ecs-task",
+  "version": "1.0.0",
+  "main": "index.js",
+  "scripts": {
+    "build": "esbuild index.js --bundle --platform=node --target=node16 --outfile=dist/index.js"
+  },
+  "license": "MIT",
+  "dependencies": {
+    "@actions/core": "^1.10.0",
+    "hcl2-parser": "^1.0.3"
+  }
+}

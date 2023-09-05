@@ -52,7 +52,7 @@ jobs:
           fi
 
       - name: Configure AWS credentials
-        uses: aws-actions/configure-aws-credentials@v1
+        uses: aws-actions/configure-aws-credentials@v3
         with:
           role-to-assume: ${{ env.AWS_ROLE_ARN }}
           aws-region: us-east-1
@@ -74,7 +74,7 @@ jobs:
           WAYPOINT_SERVER_TLS: "1"
 
       - name: Send notification to Discord
-        uses: ./.github/actions/discord-notification-deploy
+        uses: cardstack/gh-actions/.github/actions/discord-notification-deploy@feat/waypoint-wait-service-stable
         with:
           app: ${{ inputs.app }}
           status: ${{ github.action_status }}
