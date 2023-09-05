@@ -1,9 +1,12 @@
-import hcl from "hcl2-parser";
-import core from "@actions/core";
-import { readFileSync } from "fs";
-import { getExecOutput as exec } from "@actions/exec";
-import { DescribeServicesCommand, ECSClient } from "@aws-sdk/client-ecs";
-import { DescribeTargetHealthCommand, ElasticLoadBalancingV2Client } from "@aws-sdk/client-elastic-load-balancing-v2";
+const hcl = require("hcl2-parser");
+const core = require("@actions/core");
+const { readFileSync } = require("fs");
+const { getExecOutput: exec } = require("@actions/exec");
+const { DescribeServicesCommand, ECSClient } = require("@aws-sdk/client-ecs");
+const {
+  DescribeTargetHealthCommand,
+  ElasticLoadBalancingV2Client,
+} = require("@aws-sdk/client-elastic-load-balancing-v2");
 
 const ecsClient = new ECSClient();
 const elbClient = new ElasticLoadBalancingV2Client();

@@ -12,6 +12,5 @@
     "@aws-sdk/client-ecs": "^3.405.0",
     "@aws-sdk/client-elastic-load-balancing-v2": "^3.405.0",
     "hcl2-parser": "^1.0.3"
-  },
-  "type": "module"
+  }
 }
