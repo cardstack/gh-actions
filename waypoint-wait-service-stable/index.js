@@ -38,7 +38,7 @@ async function main() {
 async function getServiceName(app, project) {
   const { stdout } = await exec("waypoint", ["status", "-local", "-json", `-project=${project}`, `-app=${app}`]);
   const output = stdout.replace(/^[^{]*{/, "{");
-  const resources = JSON.parse(stdout).DeploymentResourcesSummary;
+  const resources = JSON.parse(output).DeploymentResourcesSummary;
   const resource = resources.find((resource) => resource.Platform === "aws-ecs" && resource.Type === "service");
   return resource.Name;
 }
