@@ -29,7 +29,7 @@ runs:
         DISCORD_WEBHOOK: ${{ inputs.webhook }}
       with:
         args: |
-          :checkered_flag: **${{ inputs.app }}** [${{ github.ref }}] has been successfully deployed to *${{ inputs.environment }}*
+          :checkered_flag: **${{ inputs.app }}** [${{ github.ref_name }}] has been successfully deployed to *${{ inputs.environment }}*
           :arrow_forward: Workflow: https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}
 
     - name: Fetch stopped reason and logs
@@ -47,7 +47,7 @@ runs:
         DISCORD_WEBHOOK: ${{ inputs.webhook }}
       with:
         args: |
-          :warning: **${{ inputs.app }}** [${{ github.ref }}] has failed to deploy to *${{ inputs.environment }}*
+          :warning: **${{ inputs.app }}** [${{ github.ref_name }}] has failed to deploy to *${{ inputs.environment }}*
           :arrow_forward: Workflow: https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}
           Tasks stopped for reason:
           ```
@@ -62,5 +62,5 @@ runs:
         DISCORD_WEBHOOK: ${{ inputs.webhook }}
       with:
         args: |
-          :warning: **${{ inputs.app }}** [${{ github.ref }}] has failed to deploy to *${{ inputs.environment }}*
+          :warning: **${{ inputs.app }}** [${{ github.ref_name }}] has failed to deploy to *${{ inputs.environment }}*
           :arrow_forward: Workflow: https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}
