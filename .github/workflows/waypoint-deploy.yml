@@ -74,7 +74,7 @@ jobs:
           WAYPOINT_SERVER_TLS: "1"
 
       - name: Send notification to Discord
-        uses: cardstack/gh-actions/.github/actions/discord-notification-deploy@feat/waypoint-wait-service-stable
+        uses: cardstack/gh-actions/discord-notification-deploy@feat/waypoint-wait-service-stable
         with:
           app: ${{ inputs.app }}
           status: ${{ github.action_status }}
