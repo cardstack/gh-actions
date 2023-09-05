@@ -2,14 +2,14 @@ name: Waypoint wait ECS service stable
 description: "Wait for ECS service to stabilize and ELB target group to be healthy"
 inputs:
   app:
-    description: ""
+    description: "Name of the waypoint app"
     required: true
   project:
-    description: ""
+    description: "The project the app belongs to"
     required: false
     default: "cardstack"
   waypoint-hcl:
-    description: ""
+    description: "Path to the waypoint.hcl file"
     required: false
     default: "waypoint.hcl"
 runs:

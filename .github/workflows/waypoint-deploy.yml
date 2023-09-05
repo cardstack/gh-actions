@@ -67,7 +67,7 @@ jobs:
         working-directory: ${{ inputs.working-directory }}
 
       - name: Wait service stable
-        uses: cardstack/gh-actions/waypoint-wait-service-stable@feat/waypoint-wait-service-stable
+        uses: cardstack/gh-actions/waypoint-wait-service-stable@main
         with:
           app: ${{ inputs.app }}
 
@@ -76,7 +76,7 @@ jobs:
         working-directory: ${{ inputs.working-directory }}
 
       - name: Send notification to Discord
-        uses: cardstack/gh-actions/discord-notification-deploy@feat/waypoint-wait-service-stable
+        uses: cardstack/gh-actions/discord-notification-deploy@main
         with:
           app: ${{ inputs.app }}
           status: ${{ github.action_status }}

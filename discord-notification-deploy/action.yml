@@ -35,7 +35,7 @@ runs:
     - name: Fetch stopped reason and logs
       id: debug
       if: ${{ ( inputs.status == 'Failure' || inputs.status == 'failure' ) && inputs.is_ecs == 'true' }}
-      uses: cardstack/gh-actions/fetch-stopped-ecs-task@feat/waypoint-wait-service-stable
+      uses: cardstack/gh-actions/fetch-stopped-ecs-task@main
       with:
         app: ${{ inputs.app }}
 
