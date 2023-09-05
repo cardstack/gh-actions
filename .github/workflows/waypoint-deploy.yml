@@ -67,6 +67,11 @@ jobs:
         env:
           WAYPOINT_SERVER_TLS: "1"
 
+      - name: Wait service stable
+        uses: cardstack/gh-actions/waypoint-wait-service-stable@feat/waypoint-wait-service-stable
+        with:
+          app: ${{ inputs.app }}
+
       - name: Release app
         run: waypoint release -app=${{ inputs.app }} -plain -local
         working-directory: ${{ inputs.working-directory }}
