@@ -70,6 +70,7 @@ jobs:
         uses: cardstack/gh-actions/waypoint-wait-service-stable@main
         with:
           app: ${{ inputs.app }}
+          waypoint-hcl: ${{ inputs.working-directory }}/waypoint.hcl
 
       - name: Release app
         run: waypoint release -app=${{ inputs.app }} -plain -local
