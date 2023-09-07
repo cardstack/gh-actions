@@ -1,0 +1,23 @@
+name: Update Waypoint ECS service to add EFS mount
+description: "Add EFS mount to ECS service created by Waypoint"
+inputs:
+  app:
+    description: "Name of the waypoint app"
+    required: true
+  mount-target-id:
+    description: "Mount target ID of the EFS"
+    required: true
+  access-point-id:
+    description: "Access point ID of the EFS"
+    required: true
+  project:
+    description: "The project the app belongs to"
+    required: false
+    default: "cardstack"
+  waypoint-hcl:
+    description: "Path to the waypoint.hcl file"
+    required: false
+    default: "waypoint.hcl"
+runs:
+  using: "node16"
+  main: "dist/index.js"

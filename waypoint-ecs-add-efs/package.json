@@ -1,0 +1,7 @@
+{
+  "name": "waypoint-ecs-add-efs",
+  "version": "1.0.0",
+  "main": "index.js",
+  "scripts": {},
+  "license": "MIT"
+}
