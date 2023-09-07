@@ -21,6 +21,10 @@ on:
         required: false
         type: string
         default: "."
+      init:
+        required: false
+        type: boolean
+        default: true
 
 jobs:
   build:
@@ -41,6 +45,7 @@ jobs:
         if: ${{ inputs.restore-mtime }}
 
       - name: Init
+        if: ${{ inputs.init }}
         uses: ./.github/actions/init
 
       - name: Set up env

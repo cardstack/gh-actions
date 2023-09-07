@@ -21,6 +21,10 @@ on:
         required: false
         type: string
         default: "."
+      init:
+        required: false
+        type: boolean
+        default: true
 
 jobs:
   deploy:
@@ -30,6 +34,7 @@ jobs:
       - uses: actions/checkout@v3
 
       - name: Init
+        if: ${{ inputs.init }}
         uses: ./.github/actions/init
 
       - name: Set up env
