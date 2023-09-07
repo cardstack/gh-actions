@@ -74,7 +74,7 @@ jobs:
           waypoint-hcl: ${{ inputs.working-directory }}/waypoint.hcl
 
       - name: Release app
-        run: waypoint release -app=${{ inputs.app }} -plain -local
+        run: waypoint release -app=${{ inputs.app }} -prune-retain=${{ inputs.retain }} -plain -local
         working-directory: ${{ inputs.working-directory }}
 
       - name: Send notification to Discord
