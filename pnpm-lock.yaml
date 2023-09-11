@@ -21,6 +21,21 @@ importers:
         specifier: ^1.0.3
         version: 1.0.3
 
+  waypoint-ecs-add-efs:
+    dependencies:
+      '@actions/core':
+        specifier: ^1.10.0
+        version: 1.10.0
+      '@actions/exec':
+        specifier: ^1.1.1
+        version: 1.1.1
+      '@aws-sdk/client-ecs':
+        specifier: ^3.405.0
+        version: 3.405.0
+      hcl2-parser:
+        specifier: ^1.0.3
+        version: 1.0.3
+
   waypoint-wait-service-stable:
     dependencies:
       '@actions/core':
