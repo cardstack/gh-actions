@@ -78,7 +78,7 @@ jobs:
 
       - name: Add EFS Config
         if: ${{ inputs.efs-config != '' }}
-        uses: cardstack/gh-actions/waypoint-ecs-add-efs
+        uses: cardstack/gh-actions/waypoint-ecs-add-efs@main
         with:
           app: ${{ inputs.app }}
           config: ${{ inputs.efs-config }}
