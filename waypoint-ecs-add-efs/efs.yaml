@@ -1,0 +1,6 @@
+- name: data
+  id: fs-06a56c308f12267af
+  access-point: fsap-07c213eb0125eb77b
+  mounts:
+    - container: "cavy"
+      path: "/mnt/data"
