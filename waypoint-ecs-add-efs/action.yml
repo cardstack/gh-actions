@@ -8,17 +8,8 @@ inputs:
     description: "The project the app belongs to"
     required: false
     default: "cardstack"
-  file-system-id:
-    description: "File system ID of the EFS"
-    required: true
-  access-point-id:
-    description: "Access point ID of the EFS"
-    required: true
-  mount-path:
-    description: "Path to mount the volume on container"
-    required: true
-  volume-name:
-    description: "Name of the volume"
+  config:
+    description: "Configuration for EFS volumes"
     required: true
   waypoint-hcl:
     description: "Path to the waypoint.hcl file"

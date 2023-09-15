@@ -1,5 +1,6 @@
 const hcl = require("hcl2-parser");
 const core = require("@actions/core");
+const yaml = require("yaml");
 const { getExecOutput: exec } = require("@actions/exec");
 const { readFileSync } = require("fs");
 const {
@@ -17,11 +18,14 @@ async function main() {
   try {
     const app = core.getInput("app", { required: "true" });
     const project = core.getInput("project", { required: "true" });
-    const fileSystemId = core.getInput("file-system-id", { required: "true" });
-    const accessPointId = core.getInput("access-point-id", { required: "true" });
-    const mountPath = core.getInput("mount-path", { required: "true" });
-    const volumeName = core.getInput("volume-name", { required: "true" });
     const waypointConfigFilePath = core.getInput("waypoint-hcl", { required: "true" });
+    const configYAML = core.getInput("config", { required: "true" });
+
+    const config = yaml.parse(configYAML);
+    if (config.length === 0) {
+      console.log("No volumes to add. Exiting...");
+      return;
+    }
 
     const { cluster } = getAppConfig(waypointConfigFilePath, app);
 
@@ -31,30 +35,17 @@ async function main() {
     const service = await getService(serviceName, cluster);
 
     let taskDefinition = await getTaskDefinition(service);
-    if (taskDefinitionHasVolume(taskDefinition, volumeName, fileSystemId, accessPointId)) {
-      console.log("Volume already attached");
-      return;
+    if (taskDefinition.volumes && taskDefinition.volumes.length > 0) {
+      throw "Task definition has volumes configured";
     }
 
-    taskDefinition = addVolumeToTaskDefinition(taskDefinition, volumeName, fileSystemId, accessPointId, mountPath);
+    taskDefinition = addConfigToTaskDefinition(taskDefinition, config);
     taskDefinition = await registerTaskDefinition(taskDefinition);
-
     await updateService(cluster, service, taskDefinition);
   } catch (err) {
     process.exitCode = 1;
     console.error(err);
   }
-}
-
-function taskDefinitionHasVolume(taskDefinition, name, fileSystemId, accessPointId) {
-  if (taskDefinition.volumes?.length === 0) return false;
-
-  const volume = taskDefinition.volumes.find((vol) => vol.name === name);
-
-  return Boolean(
-    volume?.efsVolumeConfiguration?.fileSystemId === fileSystemId &&
-      volume.efsVolumeConfiguration.authorizationConfig?.accessPointId === accessPointId
-  );
 }
 
 async function getTaskDefinition(service) {
@@ -95,28 +86,41 @@ async function updateService(cluster, service, taskDefinition) {
   console.log(`Service updated: ${service.serviceName}`);
 }
 
-function addVolumeToTaskDefinition(taskDefinition, volumeName, fileSystemId, accessPointId, mountPath) {
-  console.log(
-    `Creating new task definition: adding EFS ${fileSystemId} with access point ${accessPointId} as volume ${volumeName} mounting at ${mountPath}`
-  );
+function addConfigToTaskDefinition(taskDefinition, config) {
+  console.log("Creating new task definition...");
 
-  taskDefinition.volumes.push({
-    name: volumeName,
+  taskDefinition.volumes = config.map((volume) => ({
+    name: volume.name,
     efsVolumeConfiguration: {
-      fileSystemId: fileSystemId,
+      fileSystemId: volume.id,
       rootDirectory: "/",
       transitEncryption: "ENABLED",
       authorizationConfig: {
-        accessPointId: accessPointId,
+        accessPointId: volume["access-point"],
         iam: "ENABLED",
       },
     },
-  });
+  }));
 
-  taskDefinition.containerDefinitions[0].mountPoints.push({
-    containerPath: mountPath,
-    sourceVolume: volumeName,
-  });
+  let mountPoints = {};
+  for (const volume of config) {
+    for (const mount of volume.mounts) {
+      if (!mountPoints[mount.container]) mountPoints[mount.container] = [];
+      mountPoints[mount.container].push({
+        sourceVolume: volume.name,
+        containerPath: mount.path,
+      });
+    }
+  }
+
+  for (const [name, mp] of Object.entries(mountPoints)) {
+    const index = taskDefinition.containerDefinitions.findIndex(
+      (containerDefinition) => containerDefinition.name === name
+    );
+
+    if (index < 0) throw `container definition for '${name}' not found`;
+    taskDefinition.containerDefinitions[index].mountPoints = mp;
+  }
 
   // Remove post-deployment attributes from the fetched task definition, they cannot be specified in a new one
   delete taskDefinition.taskDefinitionArn;

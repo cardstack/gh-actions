@@ -25,6 +25,10 @@ on:
         required: false
         type: boolean
         default: true
+      efs-config:
+        required: false
+        type: string
+        default: ""
 
 jobs:
   deploy:
@@ -71,6 +75,14 @@ jobs:
       - name: Deploy app
         run: waypoint deploy -app=${{ inputs.app }} -plain -local -release=false
         working-directory: ${{ inputs.working-directory }}
+
+      - name: Add EFS Config
+        if: ${{ inputs.efs-config != '' }}
+        uses: cardstack/gh-actions/waypoint-ecs-add-efs@main
+        with:
+          app: ${{ inputs.app }}
+          config: ${{ inputs.efs-config }}
+          waypoint-hcl: ${{ inputs.working-directory }}/waypoint.hcl
 
       - name: Wait service stable
         uses: cardstack/gh-actions/waypoint-wait-service-stable@main
