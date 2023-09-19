@@ -102,4 +102,5 @@ jobs:
           status: ${{ job.status }}
           environment: ${{ inputs.environment }}
           webhook: ${{ secrets.DISCORD_WEBHOOK }}
+          working-directory: ${{ inputs.working-directory }}
           is_ecs: "true"
