@@ -40,9 +40,9 @@ runs:
       id: debug
       if: ${{ ( inputs.status == 'Failure' || inputs.status == 'failure' ) && inputs.is_ecs == 'true' }}
       uses: cardstack/gh-actions/fetch-stopped-ecs-task@main
-      working-directory: ${{ inputs.working-directory }}
       with:
         app: ${{ inputs.app }}
+        waypoint_hcl_path: "${{ inputs.working-directory }}/waypoint.hcl"
 
     - name: Send failure notification to Discord
       id: notify_stopped_task
