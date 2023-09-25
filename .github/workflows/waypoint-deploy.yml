@@ -105,7 +105,7 @@ jobs:
 
       - name: Add autoscaling
         if: ${{ inputs.min != '' && inputs.max != ''}}
-        uses: cardstack/gh-actions/ecs-add-autoscaling@cs-4773-ecs-auto-scaling
+        uses: cardstack/gh-actions/ecs-add-autoscaling@main
         with:
           app: ${{ inputs.app }}
           min: ${{ inputs.min }}
