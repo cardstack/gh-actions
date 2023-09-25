@@ -100,6 +100,7 @@ jobs:
 
       - name: Release app
         run: waypoint release -app=${{ inputs.app }} -prune-retain=${{ inputs.retain }} -plain -local
+        timeout-minutes: 2
         working-directory: ${{ inputs.working-directory }}
 
       - name: Add autoscaling
