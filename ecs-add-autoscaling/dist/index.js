@@ -4,10 +4,17 @@ var __getOwnPropDesc = Object.getOwnPropertyDescriptor;
 var __getOwnPropNames = Object.getOwnPropertyNames;
 var __getProtoOf = Object.getPrototypeOf;
 var __hasOwnProp = Object.prototype.hasOwnProperty;
+var __require = /* @__PURE__ */ ((x) => typeof require !== "undefined" ? require : typeof Proxy !== "undefined" ? new Proxy(x, {
+  get: (a, b) => (typeof require !== "undefined" ? require : a)[b]
+}) : x)(function(x) {
+  if (typeof require !== "undefined")
+    return require.apply(this, arguments);
+  throw Error('Dynamic require of "' + x + '" is not supported');
+});
 var __esm = (fn, res) => function __init() {
   return fn && (res = (0, fn[__getOwnPropNames(fn)[0]])(fn = 0)), res;
 };
-var __commonJS = (cb, mod) => function __require() {
+var __commonJS = (cb, mod) => function __require2() {
   return mod || (0, cb[__getOwnPropNames(cb)[0]])((mod = { exports: {} }).exports, mod), mod.exports;
 };
 var __export = (target, all) => {
@@ -98,7 +105,7 @@ var require_command = __commonJS({
     };
     Object.defineProperty(exports, "__esModule", { value: true });
     exports.issue = exports.issueCommand = void 0;
-    var os = __importStar3(require("os"));
+    var os = __importStar3(__require("os"));
     var utils_1 = require_utils();
     function issueCommand(command, properties, message) {
       const cmd = new Command(command, properties, message);
@@ -152,17 +159,17 @@ var require_command = __commonJS({
 });
 
 // ../node_modules/.pnpm/uuid@8.3.2/node_modules/uuid/dist/esm-node/rng.js
+import crypto from "crypto";
 function rng() {
   if (poolPtr > rnds8Pool.length - 16) {
-    import_crypto.default.randomFillSync(rnds8Pool);
+    crypto.randomFillSync(rnds8Pool);
     poolPtr = 0;
   }
   return rnds8Pool.slice(poolPtr, poolPtr += 16);
 }
-var import_crypto, rnds8Pool, poolPtr;
+var rnds8Pool, poolPtr;
 var init_rng = __esm({
   "../node_modules/.pnpm/uuid@8.3.2/node_modules/uuid/dist/esm-node/rng.js"() {
-    import_crypto = __toESM(require("crypto"));
     rnds8Pool = new Uint8Array(256);
     poolPtr = rnds8Pool.length;
   }
@@ -355,18 +362,18 @@ var init_v35 = __esm({
 });
 
 // ../node_modules/.pnpm/uuid@8.3.2/node_modules/uuid/dist/esm-node/md5.js
+import crypto2 from "crypto";
 function md5(bytes) {
   if (Array.isArray(bytes)) {
     bytes = Buffer.from(bytes);
   } else if (typeof bytes === "string") {
     bytes = Buffer.from(bytes, "utf8");
   }
-  return import_crypto2.default.createHash("md5").update(bytes).digest();
+  return crypto2.createHash("md5").update(bytes).digest();
 }
-var import_crypto2, md5_default;
+var md5_default;
 var init_md5 = __esm({
   "../node_modules/.pnpm/uuid@8.3.2/node_modules/uuid/dist/esm-node/md5.js"() {
-    import_crypto2 = __toESM(require("crypto"));
     md5_default = md5;
   }
 });
@@ -407,18 +414,18 @@ var init_v4 = __esm({
 });
 
 // ../node_modules/.pnpm/uuid@8.3.2/node_modules/uuid/dist/esm-node/sha1.js
+import crypto3 from "crypto";
 function sha1(bytes) {
   if (Array.isArray(bytes)) {
     bytes = Buffer.from(bytes);
   } else if (typeof bytes === "string") {
     bytes = Buffer.from(bytes, "utf8");
   }
-  return import_crypto3.default.createHash("sha1").update(bytes).digest();
+  return crypto3.createHash("sha1").update(bytes).digest();
 }
-var import_crypto3, sha1_default;
+var sha1_default;
 var init_sha1 = __esm({
   "../node_modules/.pnpm/uuid@8.3.2/node_modules/uuid/dist/esm-node/sha1.js"() {
-    import_crypto3 = __toESM(require("crypto"));
     sha1_default = sha1;
   }
 });
@@ -518,8 +525,8 @@ var require_file_command = __commonJS({
     };
     Object.defineProperty(exports, "__esModule", { value: true });
     exports.prepareKeyValueMessage = exports.issueFileCommand = void 0;
-    var fs = __importStar3(require("fs"));
-    var os = __importStar3(require("os"));
+    var fs = __importStar3(__require("fs"));
+    var os = __importStar3(__require("os"));
     var uuid_1 = (init_esm_node(), __toCommonJS(esm_node_exports));
     var utils_1 = require_utils();
     function issueFileCommand(command, message) {
@@ -623,13 +630,13 @@ var require_proxy = __commonJS({
 var require_tunnel = __commonJS({
   "../node_modules/.pnpm/tunnel@0.0.6/node_modules/tunnel/lib/tunnel.js"(exports) {
     "use strict";
-    var net = require("net");
-    var tls = require("tls");
-    var http = require("http");
-    var https = require("https");
-    var events = require("events");
-    var assert = require("assert");
-    var util = require("util");
+    var net = __require("net");
+    var tls = __require("tls");
+    var http = __require("http");
+    var https = __require("https");
+    var events = __require("events");
+    var assert = __require("assert");
+    var util = __require("util");
     exports.httpOverHttp = httpOverHttp;
     exports.httpsOverHttp = httpsOverHttp;
     exports.httpOverHttps = httpOverHttps;
@@ -851,8 +858,8 @@ var require_tunnel = __commonJS({
 
 // ../node_modules/.pnpm/tunnel@0.0.6/node_modules/tunnel/index.js
 var require_tunnel2 = __commonJS({
-  "../node_modules/.pnpm/tunnel@0.0.6/node_modules/tunnel/index.js"(exports, module2) {
-    module2.exports = require_tunnel();
+  "../node_modules/.pnpm/tunnel@0.0.6/node_modules/tunnel/index.js"(exports, module) {
+    module.exports = require_tunnel();
   }
 });
 
@@ -917,8 +924,8 @@ var require_lib = __commonJS({
     };
     Object.defineProperty(exports, "__esModule", { value: true });
     exports.HttpClient = exports.isHttps = exports.HttpClientResponse = exports.HttpClientError = exports.getProxyUrl = exports.MediaTypes = exports.Headers = exports.HttpCodes = void 0;
-    var http = __importStar3(require("http"));
-    var https = __importStar3(require("https"));
+    var http = __importStar3(__require("http"));
+    var https = __importStar3(__require("https"));
     var pm = __importStar3(require_proxy());
     var tunnel = __importStar3(require_tunnel2());
     var HttpCodes;
@@ -1684,8 +1691,8 @@ var require_summary = __commonJS({
     };
     Object.defineProperty(exports, "__esModule", { value: true });
     exports.summary = exports.markdownSummary = exports.SUMMARY_DOCS_URL = exports.SUMMARY_ENV_VAR = void 0;
-    var os_1 = require("os");
-    var fs_1 = require("fs");
+    var os_1 = __require("os");
+    var fs_1 = __require("fs");
     var { access, appendFile, writeFile } = fs_1.promises;
     exports.SUMMARY_ENV_VAR = "GITHUB_STEP_SUMMARY";
     exports.SUMMARY_DOCS_URL = "https://docs.github.com/actions/using-workflows/workflow-commands-for-github-actions#adding-a-job-summary";
@@ -1979,7 +1986,7 @@ var require_path_utils = __commonJS({
     };
     Object.defineProperty(exports, "__esModule", { value: true });
     exports.toPlatformPath = exports.toWin32Path = exports.toPosixPath = void 0;
-    var path = __importStar3(require("path"));
+    var path = __importStar3(__require("path"));
     function toPosixPath(pth) {
       return pth.replace(/[\\]/g, "/");
     }
@@ -2059,8 +2066,8 @@ var require_core = __commonJS({
     var command_1 = require_command();
     var file_command_1 = require_file_command();
     var utils_1 = require_utils();
-    var os = __importStar3(require("os"));
-    var path = __importStar3(require("path"));
+    var os = __importStar3(__require("os"));
+    var path = __importStar3(__require("path"));
     var oidc_utils_1 = require_oidc_utils();
     var ExitCode;
     (function(ExitCode2) {
@@ -2286,8 +2293,8 @@ var require_io_util = __commonJS({
     var _a;
     Object.defineProperty(exports, "__esModule", { value: true });
     exports.getCmdPath = exports.tryGetExecutablePath = exports.isRooted = exports.isDirectory = exports.exists = exports.READONLY = exports.UV_FS_O_EXLOCK = exports.IS_WINDOWS = exports.unlink = exports.symlink = exports.stat = exports.rmdir = exports.rm = exports.rename = exports.readlink = exports.readdir = exports.open = exports.mkdir = exports.lstat = exports.copyFile = exports.chmod = void 0;
-    var fs = __importStar3(require("fs"));
-    var path = __importStar3(require("path"));
+    var fs = __importStar3(__require("fs"));
+    var path = __importStar3(__require("path"));
     _a = fs.promises, exports.chmod = _a.chmod, exports.copyFile = _a.copyFile, exports.lstat = _a.lstat, exports.mkdir = _a.mkdir, exports.open = _a.open, exports.readdir = _a.readdir, exports.readlink = _a.readlink, exports.rename = _a.rename, exports.rm = _a.rm, exports.rmdir = _a.rmdir, exports.stat = _a.stat, exports.symlink = _a.symlink, exports.unlink = _a.unlink;
     exports.IS_WINDOWS = process.platform === "win32";
     exports.UV_FS_O_EXLOCK = 268435456;
@@ -2463,8 +2470,8 @@ var require_io = __commonJS({
     };
     Object.defineProperty(exports, "__esModule", { value: true });
     exports.findInPath = exports.which = exports.mkdirP = exports.rmRF = exports.mv = exports.cp = void 0;
-    var assert_1 = require("assert");
-    var path = __importStar3(require("path"));
+    var assert_1 = __require("assert");
+    var path = __importStar3(__require("path"));
     var ioUtil = __importStar3(require_io_util());
     function cp(source, dest, options = {}) {
       return __awaiter3(this, void 0, void 0, function* () {
@@ -2716,13 +2723,13 @@ var require_toolrunner = __commonJS({
     };
     Object.defineProperty(exports, "__esModule", { value: true });
     exports.argStringToArray = exports.ToolRunner = void 0;
-    var os = __importStar3(require("os"));
-    var events = __importStar3(require("events"));
-    var child = __importStar3(require("child_process"));
-    var path = __importStar3(require("path"));
+    var os = __importStar3(__require("os"));
+    var events = __importStar3(__require("events"));
+    var child = __importStar3(__require("child_process"));
+    var path = __importStar3(__require("path"));
     var io = __importStar3(require_io());
     var ioUtil = __importStar3(require_io_util());
-    var timers_1 = require("timers");
+    var timers_1 = __require("timers");
     var IS_WINDOWS = process.platform === "win32";
     var ToolRunner = class extends events.EventEmitter {
       constructor(toolPath, args, options) {
@@ -3205,7 +3212,7 @@ var require_exec = __commonJS({
     };
     Object.defineProperty(exports, "__esModule", { value: true });
     exports.getExecOutput = exports.exec = void 0;
-    var string_decoder_1 = require("string_decoder");
+    var string_decoder_1 = __require("string_decoder");
     var tr = __importStar3(require_toolrunner());
     function exec2(commandLine, args, options) {
       return __awaiter3(this, void 0, void 0, function* () {
@@ -6334,7 +6341,7 @@ var require_dist_cjs12 = __commonJS({
     Object.defineProperty(exports, "__esModule", { value: true });
     exports.fromString = exports.fromArrayBuffer = void 0;
     var is_array_buffer_1 = require_dist_cjs11();
-    var buffer_1 = require("buffer");
+    var buffer_1 = __require("buffer");
     var fromArrayBuffer = (input, offset = 0, length = input.byteLength - offset) => {
       if (!(0, is_array_buffer_1.isArrayBuffer)(input)) {
         throw new TypeError(`The "input" argument must be ArrayBuffer. Received type ${typeof input} (${input})`);
@@ -7216,8 +7223,8 @@ var require_configurations = __commonJS({
 
 // ../node_modules/.pnpm/@aws-sdk+util-endpoints@3.413.0/node_modules/@aws-sdk/util-endpoints/dist-cjs/lib/aws/partitions.json
 var require_partitions = __commonJS({
-  "../node_modules/.pnpm/@aws-sdk+util-endpoints@3.413.0/node_modules/@aws-sdk/util-endpoints/dist-cjs/lib/aws/partitions.json"(exports, module2) {
-    module2.exports = {
+  "../node_modules/.pnpm/@aws-sdk+util-endpoints@3.413.0/node_modules/@aws-sdk/util-endpoints/dist-cjs/lib/aws/partitions.json"(exports, module) {
+    module.exports = {
       partitions: [{
         id: "aws",
         outputs: {
@@ -10980,7 +10987,7 @@ var require_getAwsChunkedEncodingStream = __commonJS({
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     exports.getAwsChunkedEncodingStream = void 0;
-    var stream_1 = require("stream");
+    var stream_1 = __require("stream");
     var getAwsChunkedEncodingStream = (readableStream, options) => {
       const { base64Encoder, bodyLengthChecker, checksumAlgorithmFn, checksumLocationName, streamHasher } = options;
       const checksumRequired = base64Encoder !== void 0 && checksumAlgorithmFn !== void 0 && checksumLocationName !== void 0 && streamHasher !== void 0;
@@ -11140,7 +11147,7 @@ var require_write_request_body = __commonJS({
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     exports.writeRequestBody = void 0;
-    var stream_1 = require("stream");
+    var stream_1 = __require("stream");
     var MIN_WAIT_TIME = 1e3;
     async function writeRequestBody(httpRequest, request, maxContinueTimeoutMs = MIN_WAIT_TIME) {
       var _a;
@@ -11191,8 +11198,8 @@ var require_node_http_handler = __commonJS({
     exports.NodeHttpHandler = exports.DEFAULT_REQUEST_TIMEOUT = void 0;
     var protocol_http_1 = require_dist_cjs2();
     var querystring_builder_1 = require_dist_cjs33();
-    var http_1 = require("http");
-    var https_1 = require("https");
+    var http_1 = __require("http");
+    var https_1 = __require("https");
     var constants_1 = require_constants5();
     var get_transformed_headers_1 = require_get_transformed_headers();
     var set_connection_timeout_1 = require_set_connection_timeout();
@@ -11381,7 +11388,7 @@ var require_node_http2_connection_manager = __commonJS({
     Object.defineProperty(exports, "__esModule", { value: true });
     exports.NodeHttp2ConnectionManager = void 0;
     var tslib_1 = (init_tslib_es6(), __toCommonJS(tslib_es6_exports));
-    var http2_1 = tslib_1.__importDefault(require("http2"));
+    var http2_1 = tslib_1.__importDefault(__require("http2"));
     var node_http2_connection_pool_1 = require_node_http2_connection_pool();
     var NodeHttp2ConnectionManager = class {
       constructor(config) {
@@ -11477,7 +11484,7 @@ var require_node_http2_handler = __commonJS({
     exports.NodeHttp2Handler = void 0;
     var protocol_http_1 = require_dist_cjs2();
     var querystring_builder_1 = require_dist_cjs33();
-    var http2_1 = require("http2");
+    var http2_1 = __require("http2");
     var get_transformed_headers_1 = require_get_transformed_headers();
     var node_http2_connection_manager_1 = require_node_http2_connection_manager();
     var write_request_body_1 = require_write_request_body();
@@ -11637,7 +11644,7 @@ var require_collector = __commonJS({
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     exports.Collector = void 0;
-    var stream_1 = require("stream");
+    var stream_1 = __require("stream");
     var Collector = class extends stream_1.Writable {
       constructor() {
         super(...arguments);
@@ -11696,8 +11703,8 @@ var require_sdk_stream_mixin = __commonJS({
     exports.sdkStreamMixin = void 0;
     var node_http_handler_1 = require_dist_cjs34();
     var util_buffer_from_1 = require_dist_cjs12();
-    var stream_1 = require("stream");
-    var util_1 = require("util");
+    var stream_1 = __require("stream");
+    var util_1 = __require("util");
     var ERR_MSG_STREAM_HAS_BEEN_TRANSFORMED = "The stream has already been transformed.";
     var sdkStreamMixin = (stream) => {
       var _a, _b;
@@ -12857,8 +12864,8 @@ var require_EndpointParameters = __commonJS({
 
 // ../node_modules/.pnpm/@aws-sdk+client-application-auto-scaling@3.414.0/node_modules/@aws-sdk/client-application-auto-scaling/package.json
 var require_package = __commonJS({
-  "../node_modules/.pnpm/@aws-sdk+client-application-auto-scaling@3.414.0/node_modules/@aws-sdk/client-application-auto-scaling/package.json"(exports, module2) {
-    module2.exports = {
+  "../node_modules/.pnpm/@aws-sdk+client-application-auto-scaling@3.414.0/node_modules/@aws-sdk/client-application-auto-scaling/package.json"(exports, module) {
+    module.exports = {
       name: "@aws-sdk/client-application-auto-scaling",
       description: "AWS SDK for JavaScript Application Auto Scaling Client for Node.js, Browser and React Native",
       version: "3.414.0",
@@ -12997,8 +13004,8 @@ var require_EndpointParameters2 = __commonJS({
 
 // ../node_modules/.pnpm/@aws-sdk+client-sts@3.414.0/node_modules/@aws-sdk/client-sts/package.json
 var require_package2 = __commonJS({
-  "../node_modules/.pnpm/@aws-sdk+client-sts@3.414.0/node_modules/@aws-sdk/client-sts/package.json"(exports, module2) {
-    module2.exports = {
+  "../node_modules/.pnpm/@aws-sdk+client-sts@3.414.0/node_modules/@aws-sdk/client-sts/package.json"(exports, module) {
+    module.exports = {
       name: "@aws-sdk/client-sts",
       description: "AWS SDK for JavaScript Sts Client for Node.js, Browser and React Native",
       version: "3.414.0",
@@ -13707,7 +13714,7 @@ var require_OptionsBuilder = __commonJS({
 
 // ../node_modules/.pnpm/fast-xml-parser@4.2.5/node_modules/fast-xml-parser/src/xmlparser/xmlNode.js
 var require_xmlNode = __commonJS({
-  "../node_modules/.pnpm/fast-xml-parser@4.2.5/node_modules/fast-xml-parser/src/xmlparser/xmlNode.js"(exports, module2) {
+  "../node_modules/.pnpm/fast-xml-parser@4.2.5/node_modules/fast-xml-parser/src/xmlparser/xmlNode.js"(exports, module) {
     "use strict";
     var XmlNode = class {
       constructor(tagname) {
@@ -13730,13 +13737,13 @@ var require_xmlNode = __commonJS({
         }
       }
     };
-    module2.exports = XmlNode;
+    module.exports = XmlNode;
   }
 });
 
 // ../node_modules/.pnpm/fast-xml-parser@4.2.5/node_modules/fast-xml-parser/src/xmlparser/DocTypeReader.js
 var require_DocTypeReader = __commonJS({
-  "../node_modules/.pnpm/fast-xml-parser@4.2.5/node_modules/fast-xml-parser/src/xmlparser/DocTypeReader.js"(exports, module2) {
+  "../node_modules/.pnpm/fast-xml-parser@4.2.5/node_modules/fast-xml-parser/src/xmlparser/DocTypeReader.js"(exports, module) {
     var util = require_util4();
     function readDocType(xmlData, i) {
       const entities = {};
@@ -13839,13 +13846,13 @@ var require_DocTypeReader = __commonJS({
       else
         throw new Error(`Invalid entity name ${name}`);
     }
-    module2.exports = readDocType;
+    module.exports = readDocType;
   }
 });
 
 // ../node_modules/.pnpm/strnum@1.0.5/node_modules/strnum/strnum.js
 var require_strnum = __commonJS({
-  "../node_modules/.pnpm/strnum@1.0.5/node_modules/strnum/strnum.js"(exports, module2) {
+  "../node_modules/.pnpm/strnum@1.0.5/node_modules/strnum/strnum.js"(exports, module) {
     var hexRegex = /^[-+]?0x[a-fA-F0-9]+$/;
     var numRegex = /^([\-\+])?(0*)(\.[0-9]+([eE]\-?[0-9]+)?|[0-9]+(\.[0-9]+([eE]\-?[0-9]+)?)?)$/;
     if (!Number.parseInt && window.parseInt) {
@@ -13936,13 +13943,13 @@ var require_strnum = __commonJS({
       }
       return numStr;
     }
-    module2.exports = toNumber;
+    module.exports = toNumber;
   }
 });
 
 // ../node_modules/.pnpm/fast-xml-parser@4.2.5/node_modules/fast-xml-parser/src/xmlparser/OrderedObjParser.js
 var require_OrderedObjParser = __commonJS({
-  "../node_modules/.pnpm/fast-xml-parser@4.2.5/node_modules/fast-xml-parser/src/xmlparser/OrderedObjParser.js"(exports, module2) {
+  "../node_modules/.pnpm/fast-xml-parser@4.2.5/node_modules/fast-xml-parser/src/xmlparser/OrderedObjParser.js"(exports, module) {
     "use strict";
     var util = require_util4();
     var xmlNode = require_xmlNode();
@@ -14426,7 +14433,7 @@ var require_OrderedObjParser = __commonJS({
         }
       }
     }
-    module2.exports = OrderedObjParser;
+    module.exports = OrderedObjParser;
   }
 });
 
@@ -14528,7 +14535,7 @@ var require_node2json = __commonJS({
 
 // ../node_modules/.pnpm/fast-xml-parser@4.2.5/node_modules/fast-xml-parser/src/xmlparser/XMLParser.js
 var require_XMLParser = __commonJS({
-  "../node_modules/.pnpm/fast-xml-parser@4.2.5/node_modules/fast-xml-parser/src/xmlparser/XMLParser.js"(exports, module2) {
+  "../node_modules/.pnpm/fast-xml-parser@4.2.5/node_modules/fast-xml-parser/src/xmlparser/XMLParser.js"(exports, module) {
     var { buildOptions } = require_OptionsBuilder();
     var OrderedObjParser = require_OrderedObjParser();
     var { prettify } = require_node2json();
@@ -14583,13 +14590,13 @@ var require_XMLParser = __commonJS({
         }
       }
     };
-    module2.exports = XMLParser;
+    module.exports = XMLParser;
   }
 });
 
 // ../node_modules/.pnpm/fast-xml-parser@4.2.5/node_modules/fast-xml-parser/src/xmlbuilder/orderedJs2Xml.js
 var require_orderedJs2Xml = __commonJS({
-  "../node_modules/.pnpm/fast-xml-parser@4.2.5/node_modules/fast-xml-parser/src/xmlbuilder/orderedJs2Xml.js"(exports, module2) {
+  "../node_modules/.pnpm/fast-xml-parser@4.2.5/node_modules/fast-xml-parser/src/xmlbuilder/orderedJs2Xml.js"(exports, module) {
     var EOL = "\n";
     function toXml(jArray, options) {
       let indentation = "";
@@ -14711,13 +14718,13 @@ var require_orderedJs2Xml = __commonJS({
       }
       return textValue;
     }
-    module2.exports = toXml;
+    module.exports = toXml;
   }
 });
 
 // ../node_modules/.pnpm/fast-xml-parser@4.2.5/node_modules/fast-xml-parser/src/xmlbuilder/json2xml.js
 var require_json2xml = __commonJS({
-  "../node_modules/.pnpm/fast-xml-parser@4.2.5/node_modules/fast-xml-parser/src/xmlbuilder/json2xml.js"(exports, module2) {
+  "../node_modules/.pnpm/fast-xml-parser@4.2.5/node_modules/fast-xml-parser/src/xmlbuilder/json2xml.js"(exports, module) {
     "use strict";
     var buildFromOrderedJs = require_orderedJs2Xml();
     var defaultOptions = {
@@ -14939,18 +14946,18 @@ var require_json2xml = __commonJS({
         return false;
       }
     }
-    module2.exports = Builder;
+    module.exports = Builder;
   }
 });
 
 // ../node_modules/.pnpm/fast-xml-parser@4.2.5/node_modules/fast-xml-parser/src/fxp.js
 var require_fxp = __commonJS({
-  "../node_modules/.pnpm/fast-xml-parser@4.2.5/node_modules/fast-xml-parser/src/fxp.js"(exports, module2) {
+  "../node_modules/.pnpm/fast-xml-parser@4.2.5/node_modules/fast-xml-parser/src/fxp.js"(exports, module) {
     "use strict";
     var validator = require_validator();
     var XMLParser = require_XMLParser();
     var XMLBuilder = require_json2xml();
-    module2.exports = {
+    module.exports = {
       XMLParser,
       XMLValidator: validator,
       XMLBuilder
@@ -16236,9 +16243,9 @@ var require_getHomeDir = __commonJS({
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     exports.getHomeDir = void 0;
-    var os_1 = require("os");
-    var path_1 = require("path");
-    var process_1 = require("process");
+    var os_1 = __require("os");
+    var path_1 = __require("path");
+    var process_1 = __require("process");
     var homeDirCache = {};
     var getHomeDirCacheKey = () => {
       if (process_1.geteuid) {
@@ -16282,8 +16289,8 @@ var require_getSSOTokenFilepath = __commonJS({
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     exports.getSSOTokenFilepath = void 0;
-    var crypto_1 = require("crypto");
-    var path_1 = require("path");
+    var crypto_1 = __require("crypto");
+    var path_1 = __require("path");
     var getHomeDir_1 = require_getHomeDir();
     var getSSOTokenFilepath = (id) => {
       const hasher = (0, crypto_1.createHash)("sha1");
@@ -16300,7 +16307,7 @@ var require_getSSOTokenFromFile = __commonJS({
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     exports.getSSOTokenFromFile = void 0;
-    var fs_1 = require("fs");
+    var fs_1 = __require("fs");
     var getSSOTokenFilepath_1 = require_getSSOTokenFilepath();
     var { readFile } = fs_1.promises;
     var getSSOTokenFromFile = async (id) => {
@@ -16318,7 +16325,7 @@ var require_getConfigFilepath = __commonJS({
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     exports.getConfigFilepath = exports.ENV_CONFIG_PATH = void 0;
-    var path_1 = require("path");
+    var path_1 = __require("path");
     var getHomeDir_1 = require_getHomeDir();
     exports.ENV_CONFIG_PATH = "AWS_CONFIG_FILE";
     var getConfigFilepath = () => process.env[exports.ENV_CONFIG_PATH] || (0, path_1.join)((0, getHomeDir_1.getHomeDir)(), ".aws", "config");
@@ -16332,7 +16339,7 @@ var require_getCredentialsFilepath = __commonJS({
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     exports.getCredentialsFilepath = exports.ENV_CREDENTIALS_PATH = void 0;
-    var path_1 = require("path");
+    var path_1 = __require("path");
     var getHomeDir_1 = require_getHomeDir();
     exports.ENV_CREDENTIALS_PATH = "AWS_SHARED_CREDENTIALS_FILE";
     var getCredentialsFilepath = () => process.env[exports.ENV_CREDENTIALS_PATH] || (0, path_1.join)((0, getHomeDir_1.getHomeDir)(), ".aws", "credentials");
@@ -16399,7 +16406,7 @@ var require_slurpFile = __commonJS({
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     exports.slurpFile = void 0;
-    var fs_1 = require("fs");
+    var fs_1 = __require("fs");
     var { readFile } = fs_1.promises;
     var filePromisesHash = {};
     var slurpFile = (path, options) => {
@@ -16545,8 +16552,8 @@ var require_httpRequest2 = __commonJS({
     Object.defineProperty(exports, "__esModule", { value: true });
     exports.httpRequest = void 0;
     var property_provider_1 = require_dist_cjs6();
-    var buffer_1 = require("buffer");
-    var http_1 = require("http");
+    var buffer_1 = __require("buffer");
+    var http_1 = __require("http");
     function httpRequest(options) {
       return new Promise((resolve, reject) => {
         var _a;
@@ -16640,7 +16647,7 @@ var require_fromContainerMetadata = __commonJS({
     Object.defineProperty(exports, "__esModule", { value: true });
     exports.fromContainerMetadata = exports.ENV_CMDS_AUTH_TOKEN = exports.ENV_CMDS_RELATIVE_URI = exports.ENV_CMDS_FULL_URI = void 0;
     var property_provider_1 = require_dist_cjs6();
-    var url_1 = require("url");
+    var url_1 = __require("url");
     var httpRequest_1 = require_httpRequest2();
     var ImdsCredentials_1 = require_ImdsCredentials();
     var RemoteProviderInit_1 = require_RemoteProviderInit();
@@ -17239,8 +17246,8 @@ var require_resolveProcessCredentials = __commonJS({
     Object.defineProperty(exports, "__esModule", { value: true });
     exports.resolveProcessCredentials = void 0;
     var property_provider_1 = require_dist_cjs6();
-    var child_process_1 = require("child_process");
-    var util_1 = require("util");
+    var child_process_1 = __require("child_process");
+    var util_1 = __require("util");
     var getValidatedProcessCredentials_1 = require_getValidatedProcessCredentials();
     var resolveProcessCredentials = async (profileName, profiles) => {
       const profile = profiles[profileName];
@@ -17345,8 +17352,8 @@ var require_EndpointParameters3 = __commonJS({
 
 // ../node_modules/.pnpm/@aws-sdk+client-sso@3.414.0/node_modules/@aws-sdk/client-sso/package.json
 var require_package3 = __commonJS({
-  "../node_modules/.pnpm/@aws-sdk+client-sso@3.414.0/node_modules/@aws-sdk/client-sso/package.json"(exports, module2) {
-    module2.exports = {
+  "../node_modules/.pnpm/@aws-sdk+client-sso@3.414.0/node_modules/@aws-sdk/client-sso/package.json"(exports, module) {
+    module.exports = {
       name: "@aws-sdk/client-sso",
       description: "AWS SDK for JavaScript Sso Client for Node.js, Browser and React Native",
       version: "3.414.0",
@@ -17643,8 +17650,8 @@ var require_getHomeDir2 = __commonJS({
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     exports.getHomeDir = void 0;
-    var os_1 = require("os");
-    var path_1 = require("path");
+    var os_1 = __require("os");
+    var path_1 = __require("path");
     var homeDirCache = {};
     var getHomeDirCacheKey = () => {
       if (process && process.geteuid) {
@@ -17688,8 +17695,8 @@ var require_getSSOTokenFilepath2 = __commonJS({
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     exports.getSSOTokenFilepath = void 0;
-    var crypto_1 = require("crypto");
-    var path_1 = require("path");
+    var crypto_1 = __require("crypto");
+    var path_1 = __require("path");
     var getHomeDir_1 = require_getHomeDir2();
     var getSSOTokenFilepath = (id) => {
       const hasher = (0, crypto_1.createHash)("sha1");
@@ -17706,7 +17713,7 @@ var require_getSSOTokenFromFile2 = __commonJS({
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     exports.getSSOTokenFromFile = void 0;
-    var fs_1 = require("fs");
+    var fs_1 = __require("fs");
     var getSSOTokenFilepath_1 = require_getSSOTokenFilepath2();
     var { readFile } = fs_1.promises;
     var getSSOTokenFromFile = async (id) => {
@@ -17724,7 +17731,7 @@ var require_getConfigFilepath2 = __commonJS({
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     exports.getConfigFilepath = exports.ENV_CONFIG_PATH = void 0;
-    var path_1 = require("path");
+    var path_1 = __require("path");
     var getHomeDir_1 = require_getHomeDir2();
     exports.ENV_CONFIG_PATH = "AWS_CONFIG_FILE";
     var getConfigFilepath = () => process.env[exports.ENV_CONFIG_PATH] || (0, path_1.join)((0, getHomeDir_1.getHomeDir)(), ".aws", "config");
@@ -17738,7 +17745,7 @@ var require_getCredentialsFilepath2 = __commonJS({
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     exports.getCredentialsFilepath = exports.ENV_CREDENTIALS_PATH = void 0;
-    var path_1 = require("path");
+    var path_1 = __require("path");
     var getHomeDir_1 = require_getHomeDir2();
     exports.ENV_CREDENTIALS_PATH = "AWS_SHARED_CREDENTIALS_FILE";
     var getCredentialsFilepath = () => process.env[exports.ENV_CREDENTIALS_PATH] || (0, path_1.join)((0, getHomeDir_1.getHomeDir)(), ".aws", "credentials");
@@ -17805,7 +17812,7 @@ var require_slurpFile2 = __commonJS({
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     exports.slurpFile = void 0;
-    var fs_1 = require("fs");
+    var fs_1 = __require("fs");
     var { readFile } = fs_1.promises;
     var filePromisesHash = {};
     var slurpFile = (path, options) => {
@@ -18012,13 +18019,13 @@ var require_dist_cjs47 = __commonJS({
 
 // ../node_modules/.pnpm/@aws-sdk+util-user-agent-node@3.413.0/node_modules/@aws-sdk/util-user-agent-node/dist-cjs/is-crt-available.js
 var require_is_crt_available = __commonJS({
-  "../node_modules/.pnpm/@aws-sdk+util-user-agent-node@3.413.0/node_modules/@aws-sdk/util-user-agent-node/dist-cjs/is-crt-available.js"(exports, module2) {
+  "../node_modules/.pnpm/@aws-sdk+util-user-agent-node@3.413.0/node_modules/@aws-sdk/util-user-agent-node/dist-cjs/is-crt-available.js"(exports, module) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     exports.isCrtAvailable = void 0;
     var isCrtAvailable = () => {
       try {
-        if (typeof require === "function" && typeof module2 !== "undefined" && require("aws-crt")) {
+        if (typeof __require === "function" && typeof module !== "undefined" && __require("aws-crt")) {
           return ["md/crt-avail"];
         }
         return null;
@@ -18037,8 +18044,8 @@ var require_dist_cjs48 = __commonJS({
     Object.defineProperty(exports, "__esModule", { value: true });
     exports.defaultUserAgent = exports.UA_APP_ID_INI_NAME = exports.UA_APP_ID_ENV_NAME = void 0;
     var node_config_provider_1 = require_dist_cjs47();
-    var os_1 = require("os");
-    var process_1 = require("process");
+    var os_1 = __require("os");
+    var process_1 = __require("process");
     var is_crt_available_1 = require_is_crt_available();
     exports.UA_APP_ID_ENV_NAME = "AWS_SDK_UA_APP_ID";
     exports.UA_APP_ID_INI_NAME = "sdk-ua-app-id";
@@ -18086,8 +18093,8 @@ var require_dist_cjs49 = __commonJS({
     exports.Hash = void 0;
     var util_buffer_from_1 = require_dist_cjs12();
     var util_utf8_1 = require_dist_cjs13();
-    var buffer_1 = require("buffer");
-    var crypto_1 = require("crypto");
+    var buffer_1 = __require("buffer");
+    var crypto_1 = __require("crypto");
     var Hash = class {
       constructor(algorithmIdentifier, secret) {
         this.algorithmIdentifier = algorithmIdentifier;
@@ -18126,7 +18133,7 @@ var require_calculateBodyLength = __commonJS({
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     exports.calculateBodyLength = void 0;
-    var fs_1 = require("fs");
+    var fs_1 = __require("fs");
     var calculateBodyLength = (body) => {
       if (!body) {
         return 0;
@@ -18660,8 +18667,8 @@ var require_httpRequest3 = __commonJS({
     Object.defineProperty(exports, "__esModule", { value: true });
     exports.httpRequest = void 0;
     var property_provider_1 = require_dist_cjs45();
-    var buffer_1 = require("buffer");
-    var http_1 = require("http");
+    var buffer_1 = __require("buffer");
+    var http_1 = __require("http");
     function httpRequest(options) {
       return new Promise((resolve, reject) => {
         var _a;
@@ -18755,7 +18762,7 @@ var require_fromContainerMetadata2 = __commonJS({
     Object.defineProperty(exports, "__esModule", { value: true });
     exports.fromContainerMetadata = exports.ENV_CMDS_AUTH_TOKEN = exports.ENV_CMDS_RELATIVE_URI = exports.ENV_CMDS_FULL_URI = void 0;
     var property_provider_1 = require_dist_cjs45();
-    var url_1 = require("url");
+    var url_1 = __require("url");
     var httpRequest_1 = require_httpRequest3();
     var ImdsCredentials_1 = require_ImdsCredentials2();
     var RemoteProviderInit_1 = require_RemoteProviderInit2();
@@ -21322,7 +21329,7 @@ var require_writeSSOTokenToFile = __commonJS({
     Object.defineProperty(exports, "__esModule", { value: true });
     exports.writeSSOTokenToFile = void 0;
     var shared_ini_file_loader_1 = require_dist_cjs39();
-    var fs_1 = require("fs");
+    var fs_1 = __require("fs");
     var { writeFile } = fs_1.promises;
     var writeSSOTokenToFile = (id, ssoToken) => {
       const tokenFilepath = (0, shared_ini_file_loader_1.getSSOTokenFilepath)(id);
@@ -21697,7 +21704,7 @@ var require_fromTokenFile = __commonJS({
     Object.defineProperty(exports, "__esModule", { value: true });
     exports.fromTokenFile = void 0;
     var property_provider_1 = require_dist_cjs6();
-    var fs_1 = require("fs");
+    var fs_1 = __require("fs");
     var fromWebToken_1 = require_fromWebToken();
     var ENV_TOKEN_FILE = "AWS_WEB_IDENTITY_TOKEN_FILE";
     var ENV_ROLE_ARN = "AWS_ROLE_ARN";
