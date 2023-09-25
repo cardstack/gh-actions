@@ -1,0 +1,14 @@
+{
+  "name": "ecs-add-autoscaling",
+  "version": "1.0.0",
+  "main": "index.js",
+  "scripts": {
+    "build": "esbuild index.js --bundle --platform=node --target=node16 --outfile=dist/index.js"
+  },
+  "license": "MIT",
+  "dependencies": {
+    "@actions/core": "^1.10.0",
+    "@actions/exec": "^1.1.1",
+    "@aws-sdk/client-application-auto-scaling": "^3.414.0"
+  }
+}

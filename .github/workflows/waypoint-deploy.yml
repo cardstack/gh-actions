@@ -29,6 +29,14 @@ on:
         required: false
         type: string
         default: ""
+      min:
+        required: false
+        type: string
+        default: ""
+      max:
+        required: false
+        type: string
+        default: ""
 
 jobs:
   deploy:
@@ -92,7 +100,16 @@ jobs:
 
       - name: Release app
         run: waypoint release -app=${{ inputs.app }} -prune-retain=${{ inputs.retain }} -plain -local
+        timeout-minutes: 2
         working-directory: ${{ inputs.working-directory }}
+
+      - name: Add autoscaling
+        if: ${{ inputs.min != '' && inputs.max != ''}}
+        uses: cardstack/gh-actions/ecs-add-autoscaling@main
+        with:
+          app: ${{ inputs.app }}
+          min: ${{ inputs.min }}
+          max: ${{ inputs.max }}
 
       - name: Send notification to Discord
         uses: cardstack/gh-actions/discord-notification-deploy@main
