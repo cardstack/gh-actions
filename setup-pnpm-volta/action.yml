@@ -1,0 +1,18 @@
+name: Setup pnpm
+description: Setup pnpm using the version pinned in package.json's volta section
+
+runs:
+  using: composite
+  steps:
+    - id: package-json
+      shell: bash
+      run: |
+        {
+          echo "package-json<<EOF"
+          cat package.json
+          echo EOF
+        } >> "$GITHUB_OUTPUT"
+
+    - uses: pnpm/action-setup@v2
+      with:
+        version: ${{ fromJson(steps.package-json.outputs.package-json).volta.pnpm }}
