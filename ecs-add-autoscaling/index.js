@@ -1,4 +1,4 @@
-//import core from "@actions/core";
+import core from "@actions/core";
 import { getExecOutput as exec } from "@actions/exec";
 import {
   ApplicationAutoScalingClient,
@@ -12,15 +12,10 @@ main();
 
 async function main() {
   try {
-    //const app = core.getInput("app", { required: "true" });
-    //const project = core.getInput("project", { required: "true" });
-    //const minString = core.getInput("min", { required: "true" });
-    //const maxString = core.getInput("max", { required: "true" });
-
-    const app = "cavy";
-    const project = "cardstack";
-    const minString = "1";
-    const maxString = "3";
+    const app = core.getInput("app", { required: "true" });
+    const project = core.getInput("project", { required: "true" });
+    const minString = core.getInput("min", { required: "true" });
+    const maxString = core.getInput("max", { required: "true" });
 
     const min = parseInt(minString);
     const max = parseInt(maxString);
