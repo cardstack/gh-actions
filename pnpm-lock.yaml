@@ -51,8 +51,20 @@ importers:
         specifier: ^2.3.2
         version: 2.3.2
 
+  waypoint-ecs-add-tags:
+    dependencies:
+      '@actions/exec':
+        specifier: ^1.1.1
+        version: 1.1.1
+      '@aws-sdk/client-ecs':
+        specifier: ^3.405.0
+        version: 3.405.0
+
   waypoint-ecs-prune:
     dependencies:
+      '@actions/core':
+        specifier: ^1.10.0
+        version: 1.10.0
       '@actions/exec':
         specifier: ^1.1.1
         version: 1.1.1

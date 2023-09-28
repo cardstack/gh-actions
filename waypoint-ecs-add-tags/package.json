@@ -1,5 +1,5 @@
 {
-  "name": "waypoint-ecs-prune",
+  "name": "waypoint-ecs-add-tags",
   "version": "1.0.0",
   "main": "index.js",
   "scripts": {
@@ -8,9 +8,7 @@
   },
   "license": "MIT",
   "dependencies": {
-    "@actions/core": "^1.10.0",
     "@actions/exec": "^1.1.1",
-    "@aws-sdk/client-ecs": "^3.405.0",
-    "@aws-sdk/client-elastic-load-balancing-v2": "^3.405.0"
+    "@aws-sdk/client-ecs": "^3.405.0"
   }
 }
