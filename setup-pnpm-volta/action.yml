@@ -13,6 +13,10 @@ runs:
           echo EOF
         } >> "$GITHUB_OUTPUT"
 
+    - shell: bash
+      run: |
+        echo "PNPM_VERSION=${{ fromJson(steps.package-json.outputs.package-json).volta.pnpm }}" >> $GITHUB_ENV
+
     - uses: pnpm/action-setup@v2
       with:
-        version: ${{ fromJson(steps.package-json.outputs.package-json).volta.pnpm }}
+        version: ${{ env.PNPM_VERSION }}
