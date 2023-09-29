@@ -2091,7 +2091,7 @@ var require_core = __commonJS({
       process.env["PATH"] = `${inputPath}${path.delimiter}${process.env["PATH"]}`;
     }
     exports.addPath = addPath;
-    function getInput(name, options) {
+    function getInput2(name, options) {
       const val2 = process.env[`INPUT_${name.replace(/ /g, "_").toUpperCase()}`] || "";
       if (options && options.required && !val2) {
         throw new Error(`Input required and not supplied: ${name}`);
@@ -2101,9 +2101,9 @@ var require_core = __commonJS({
       }
       return val2.trim();
     }
-    exports.getInput = getInput;
+    exports.getInput = getInput2;
     function getMultilineInput(name, options) {
-      const inputs = getInput(name, options).split("\n").filter((x) => x !== "");
+      const inputs = getInput2(name, options).split("\n").filter((x) => x !== "");
       if (options && options.trimWhitespace === false) {
         return inputs;
       }
@@ -2113,7 +2113,7 @@ var require_core = __commonJS({
     function getBooleanInput(name, options) {
       const trueValue = ["true", "True", "TRUE"];
       const falseValue = ["false", "False", "FALSE"];
-      const val2 = getInput(name, options);
+      const val2 = getInput2(name, options);
       if (trueValue.includes(val2))
         return true;
       if (falseValue.includes(val2))
@@ -24955,17 +24955,17 @@ var require_dist_cjs63 = __commonJS({
 });
 
 // index.js
-var import_core = __toESM(require_core());
+var core = __toESM(require_core());
 var import_exec = __toESM(require_exec());
 var import_client_application_auto_scaling = __toESM(require_dist_cjs63());
 var autoScalingClient = new import_client_application_auto_scaling.ApplicationAutoScalingClient();
 main();
 async function main() {
   try {
-    const app = import_core.default.getInput("app", { required: "true" });
-    const project = import_core.default.getInput("project", { required: "true" });
-    const minString = import_core.default.getInput("min", { required: "true" });
-    const maxString = import_core.default.getInput("max", { required: "true" });
+    const app = core.getInput("app", { required: "true" });
+    const project = core.getInput("project", { required: "true" });
+    const minString = core.getInput("min", { required: "true" });
+    const maxString = core.getInput("max", { required: "true" });
     const min = parseInt(minString);
     const max = parseInt(maxString);
     const { service, cluster } = await getWaypointResources(app, project);
