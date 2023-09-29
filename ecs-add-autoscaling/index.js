@@ -1,4 +1,4 @@
-import core from "@actions/core";
+import * as core from "@actions/core";
 import { getExecOutput as exec } from "@actions/exec";
 import {
   ApplicationAutoScalingClient,
