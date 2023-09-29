@@ -1,3 +1,4 @@
+import * as core from "@actions/core";
 import { getExecOutput as exec } from "@actions/exec";
 import { DescribeServicesCommand, ECSClient, TagResourceCommand } from "@aws-sdk/client-ecs";
 
@@ -46,6 +47,7 @@ async function getServiceArn(service, cluster) {
 }
 
 async function tagService(arn, app, environment) {
+  console.log(`Adding tags to service: ${arn}`);
   const command = new TagResourceCommand({
     resourceArn: arn,
     tags: [
