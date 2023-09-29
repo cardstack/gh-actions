@@ -1,0 +1,16 @@
+name: Waypoint ECS Add Tags
+description: "Add tags to ECS services deployed with Waypoint"
+inputs:
+  app:
+    description: "Name of the waypoint app"
+    required: true
+  project:
+    description: "The project the app belongs to"
+    required: false
+    default: "cardstack"
+  environment:
+    description: "The environment the app was deployed to"
+    required: true
+runs:
+  using: "node16"
+  main: "dist/index.js"

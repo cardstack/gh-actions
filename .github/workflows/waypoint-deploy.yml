@@ -84,6 +84,12 @@ jobs:
         run: waypoint deploy -app=${{ inputs.app }} -plain -local -release=false
         working-directory: ${{ inputs.working-directory }}
 
+      - name: Add tags
+        uses: cardstack/gh-actions/waypoint-ecs-add-tags@main
+        with:
+          app: ${{ inputs.app }}
+          environment: ${{ inputs.environment }}
+
       - name: Add EFS Config
         if: ${{ inputs.efs-config != '' }}
         uses: cardstack/gh-actions/waypoint-ecs-add-efs@main
@@ -99,12 +105,18 @@ jobs:
           waypoint-hcl: ${{ inputs.working-directory }}/waypoint.hcl
 
       - name: Release app
-        run: waypoint release -app=${{ inputs.app }} -prune-retain=${{ inputs.retain }} -plain -local
+        run: waypoint release -app=${{ inputs.app }} -prune=false -plain -local
         timeout-minutes: 2
         working-directory: ${{ inputs.working-directory }}
 
+      - name: Prune old resources
+        uses: cardstack/gh-actions/waypoint-ecs-prune@main
+        with:
+          app: ${{ inputs.app }}
+          environment: ${{ inputs.environment }}
+
       - name: Add autoscaling
-        if: ${{ inputs.min != '' && inputs.max != ''}}
+        if: ${{ inputs.min != '' && inputs.max != '' }}
         uses: cardstack/gh-actions/ecs-add-autoscaling@main
         with:
           app: ${{ inputs.app }}
