@@ -85,7 +85,7 @@ jobs:
         working-directory: ${{ inputs.working-directory }}
 
       - name: Add tags
-        uses: cardstack/gh-actions/waypoint-ecs-add-tags@waypoint-prune
+        uses: cardstack/gh-actions/waypoint-ecs-add-tags@main
         with:
           app: ${{ inputs.app }}
           environment: ${{ inputs.environment }}
@@ -110,7 +110,7 @@ jobs:
         working-directory: ${{ inputs.working-directory }}
 
       - name: Prune old resources
-        uses: cardstack/gh-actions/waypoint-ecs-prune@waypoint-prune
+        uses: cardstack/gh-actions/waypoint-ecs-prune@main
         with:
           app: ${{ inputs.app }}
           environment: ${{ inputs.environment }}
