@@ -116,7 +116,7 @@ jobs:
           environment: ${{ inputs.environment }}
 
       - name: Add autoscaling
-        if: ${{ inputs.min != '' && inputs.max != ''}}
+        if: ${{ inputs.min != '' && inputs.max != '' }}
         uses: cardstack/gh-actions/ecs-add-autoscaling@main
         with:
           app: ${{ inputs.app }}
