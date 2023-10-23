@@ -42,9 +42,9 @@ jobs:
         shell: bash
         run: |
           if [ "${{ inputs.environment }}" = "production" ]; then
-            echo "AWS_ROLE_ARN=arn:aws:iam::120317779495:role/github-actions" >> $GITHUB_ENV
+            echo "AWS_ROLE_ARN=arn:aws:iam::120317779495:role/github" >> $GITHUB_ENV
           elif [ "${{ inputs.environment }}" = "staging" ]; then
-            echo "AWS_ROLE_ARN=arn:aws:iam::680542703984:role/github-actions" >> $GITHUB_ENV
+            echo "AWS_ROLE_ARN=arn:aws:iam::680542703984:role/github" >> $GITHUB_ENV
           else
             echo "unrecognized environment"
             exit 1;
