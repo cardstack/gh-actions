@@ -1,0 +1,60 @@
+name: Build docker image and push to ecr
+
+on:
+  workflow_call:
+    inputs:
+      app:
+        required: true
+        type: string
+      environment:
+        required: true
+        type: string
+      dockerfile:
+        required: false
+        type: string
+        default: "Dockerfile"
+      context:
+        required: false
+        type: string
+        default: "."
+
+jobs:
+  build:
+    name: Build
+    runs-on: ubuntu-latest
+    concurrency:
+      group: docker-ecr-build-${{ inputs.app }}-${{ inputs.environment }}-${{ github.head_ref || github.run_id }}
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Set up env
+        shell: bash
+        working-directory: ${{ inputs.working-directory }}
+        run: |
+          if [ "${{ inputs.environment }}" = "production" ]; then
+            echo "AWS_ROLE_ARN=arn:aws:iam::120317779495:role/waypoint" >> $GITHUB_ENV
+          elif [ "${{ inputs.environment }}" = "staging" ]; then
+            echo "AWS_ROLE_ARN=arn:aws:iam::680542703984:role/waypoint" >> $GITHUB_ENV
+          else
+            echo "unrecognized environment"
+            exit 1;
+          fi
+
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v3
+        with:
+          role-to-assume: ${{ env.AWS_ROLE_ARN }}
+          aws-region: us-east-1
+
+      - id: login-ecr
+        uses: aws-actions/amazon-ecr-login@v2
+
+      - name: Build and push
+        uses: docker/build-push-action@v5
+        with:
+          context: ${{ inputs.context }}
+          file: ${{ inputs.dockerfile }}
+          push: true
+          tags: |
+            ${{ steps.login-ecr.outputs.registry }}/${{ inputs.app }}:${{ github.sha }}
+            ${{ steps.login-ecr.outputs.registry }}/${{ inputs.app }}:${{ inputs.environment }}
