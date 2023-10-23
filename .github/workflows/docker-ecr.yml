@@ -24,6 +24,10 @@ on:
         required: false
         type: string
 
+permissions:
+  contents: read
+  id-token: write
+
 jobs:
   build:
     name: Build
@@ -36,7 +40,6 @@ jobs:
 
       - name: Set up env
         shell: bash
-        working-directory: ${{ inputs.working-directory }}
         run: |
           if [ "${{ inputs.environment }}" = "production" ]; then
             echo "AWS_ROLE_ARN=arn:aws:iam::120317779495:role/github-actions" >> $GITHUB_ENV
