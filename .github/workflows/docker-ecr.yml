@@ -49,6 +49,7 @@ jobs:
             echo "unrecognized environment"
             exit 1;
           fi
+          echo "SHORT_SHA=${GITHUB_SHA::7}" >> $GITHUB_ENV
 
       - name: Configure AWS credentials
         uses: aws-actions/configure-aws-credentials@v3
@@ -69,5 +70,5 @@ jobs:
           cache-to: type=gha,mode=max
           platforms: ${{ inputs.platforms }}
           tags: |
-            ${{ steps.login-ecr.outputs.registry }}/${{ inputs.repository }}:${{ github.sha }}
+            ${{ steps.login-ecr.outputs.registry }}/${{ inputs.repository }}:${{ env.SHORT_SHA }}
             ${{ steps.login-ecr.outputs.registry }}/${{ inputs.repository }}:${{ inputs.environment }}
