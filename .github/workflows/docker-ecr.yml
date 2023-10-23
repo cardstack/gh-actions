@@ -3,7 +3,7 @@ name: Build docker image and push to ecr
 on:
   workflow_call:
     inputs:
-      app:
+      repository:
         required: true
         type: string
       environment:
@@ -29,7 +29,7 @@ jobs:
     name: Build
     runs-on: ubuntu-latest
     concurrency:
-      group: docker-ecr-build-${{ inputs.app }}-${{ inputs.environment }}-${{ github.head_ref || github.run_id }}
+      group: docker-ecr-build-${{ inputs.repository }}-${{ inputs.environment }}-${{ github.head_ref || github.run_id }}
     steps:
       - uses: actions/checkout@v3
       - uses: docker/setup-buildx-action@v3
@@ -66,5 +66,5 @@ jobs:
           cache-to: type=gha,mode=max
           platforms: ${{ inputs.platforms }}
           tags: |
-            ${{ steps.login-ecr.outputs.registry }}/${{ inputs.app }}:${{ github.sha }}
-            ${{ steps.login-ecr.outputs.registry }}/${{ inputs.app }}:${{ inputs.environment }}
+            ${{ steps.login-ecr.outputs.registry }}/${{ inputs.repository }}:${{ github.sha }}
+            ${{ steps.login-ecr.outputs.registry }}/${{ inputs.repository }}:${{ inputs.environment }}
