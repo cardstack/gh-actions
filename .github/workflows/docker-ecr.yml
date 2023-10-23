@@ -17,6 +17,12 @@ on:
         required: false
         type: string
         default: "."
+      build-args:
+        required: false
+        type: string
+      platforms:
+        required: false
+        type: string
 
 jobs:
   build:
@@ -26,15 +32,16 @@ jobs:
       group: docker-ecr-build-${{ inputs.app }}-${{ inputs.environment }}-${{ github.head_ref || github.run_id }}
     steps:
       - uses: actions/checkout@v3
+      - uses: docker/setup-buildx-action@v3
 
       - name: Set up env
         shell: bash
         working-directory: ${{ inputs.working-directory }}
         run: |
           if [ "${{ inputs.environment }}" = "production" ]; then
-            echo "AWS_ROLE_ARN=arn:aws:iam::120317779495:role/waypoint" >> $GITHUB_ENV
+            echo "AWS_ROLE_ARN=arn:aws:iam::120317779495:role/github-actions" >> $GITHUB_ENV
           elif [ "${{ inputs.environment }}" = "staging" ]; then
-            echo "AWS_ROLE_ARN=arn:aws:iam::680542703984:role/waypoint" >> $GITHUB_ENV
+            echo "AWS_ROLE_ARN=arn:aws:iam::680542703984:role/github-actions" >> $GITHUB_ENV
           else
             echo "unrecognized environment"
             exit 1;
@@ -55,6 +62,9 @@ jobs:
           context: ${{ inputs.context }}
           file: ${{ inputs.dockerfile }}
           push: true
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
+          platforms: ${{ inputs.platforms }}
           tags: |
             ${{ steps.login-ecr.outputs.registry }}/${{ inputs.app }}:${{ github.sha }}
             ${{ steps.login-ecr.outputs.registry }}/${{ inputs.app }}:${{ inputs.environment }}
