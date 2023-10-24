@@ -1,0 +1,84 @@
+name: Build docker image and push to ecr
+
+on:
+  workflow_call:
+    inputs:
+      repository:
+        required: true
+        type: string
+      environment:
+        required: true
+        type: string
+      dockerfile:
+        required: false
+        type: string
+        default: "Dockerfile"
+      context:
+        required: false
+        type: string
+        default: "."
+      build-args:
+        required: false
+        type: string
+      platforms:
+        required: false
+        type: string
+    outputs:
+      image:
+        description: "Final image tag"
+        value: ${{ jobs.build.outputs.tag_sha }}
+
+permissions:
+  contents: read
+  id-token: write
+
+jobs:
+  build:
+    name: Build
+    runs-on: ubuntu-latest
+    concurrency:
+      group: docker-ecr-build-${{ inputs.repository }}-${{ inputs.environment }}-${{ github.head_ref || github.run_id }}
+    outputs:
+      tag_sha: ${{ steps.tags.outputs.tag_sha }}
+    steps:
+      - uses: actions/checkout@v3
+      - uses: docker/setup-buildx-action@v3
+
+      - name: Set up env
+        run: |
+          if [ "${{ inputs.environment }}" = "production" ]; then
+            echo "AWS_ROLE_ARN=arn:aws:iam::120317779495:role/github" >> $GITHUB_ENV
+          elif [ "${{ inputs.environment }}" = "staging" ]; then
+            echo "AWS_ROLE_ARN=arn:aws:iam::680542703984:role/github" >> $GITHUB_ENV
+          else
+            echo "unrecognized environment"
+            exit 1;
+          fi
+
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v3
+        with:
+          role-to-assume: ${{ env.AWS_ROLE_ARN }}
+          aws-region: us-east-1
+
+      - id: login-ecr
+        uses: aws-actions/amazon-ecr-login@v2
+
+      - id: tags
+        run: |
+          TAG_PREFIX="${{ steps.login-ecr.outputs.registry }}/${{ inputs.repository }}"
+          echo "tag_sha=${TAG_PREFIX}:${GITHUB_SHA::7}" >> $GITHUB_OUTPUT
+          echo "tag_env=${TAG_PREFIX}:${{ inputs.environment }}" >> $GITHUB_OUTPUT
+
+      - name: Build and push
+        uses: docker/build-push-action@v5
+        with:
+          context: ${{ inputs.context }}
+          file: ${{ inputs.dockerfile }}
+          push: true
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
+          platforms: ${{ inputs.platforms }}
+          tags: |
+            ${{ steps.tags.outputs.tag_sha }}
+            ${{ steps.tags.outputs.tag_env }}
