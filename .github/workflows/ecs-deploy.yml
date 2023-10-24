@@ -53,4 +53,4 @@ jobs:
           service_name_cmd: "--service-name"
           service_name: ${{ inputs.service_name }}
           force_new_deployment_cmd: "--force-new-deployment"
-          wait_for_success_cmd: "--wait-for-success"
+          skip_deployments_check_cmd: "--skip-deployments-check"
