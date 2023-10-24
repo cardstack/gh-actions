@@ -52,3 +52,7 @@ jobs:
           image: ${{ inputs.image }}
           service_name_cmd: "--service-name"
           service_name: ${{ inputs.service_name }}
+          force_new_deployment_cmd: "--force-new-deployment"
+          force_new_deployment: true
+          wait_for_success_cmd: "--wait-for-success"
+          wait_for_success: true
