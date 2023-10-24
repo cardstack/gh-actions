@@ -15,6 +15,10 @@ on:
       service_name:
         required: true
         type: string
+      timeout:
+        required: false
+        type: number
+        default: 300
 
 permissions:
   contents: read
@@ -54,4 +58,4 @@ jobs:
           service_name: ${{ inputs.service_name }}
           force_new_deployment_cmd: "--force-new-deployment"
           timeout_cmd: "--timeout"
-          timeout: "300"
+          timeout: "${{ inputs.timeout }}"
