@@ -54,7 +54,7 @@ jobs:
       - name: Fetch latest task definition
         run: >
           aws ecs describe-task-definition
-          --task-definition ${{ service-name }}
+          --task-definition ${{ inputs.service-name }}
           --query taskDefinition
           > task-definition.json
 
