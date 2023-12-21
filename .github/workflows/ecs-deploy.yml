@@ -1,4 +1,4 @@
-name: Build docker image and push to ecr
+name: Deploy service to ECS
 
 on:
   workflow_call:
@@ -12,13 +12,16 @@ on:
       image:
         required: true
         type: string
-      service_name:
+      container-name:
         required: true
         type: string
-      timeout:
+      service-name:
+        required: true
+        type: string
+      timeout-minutes:
         required: false
         type: number
-        default: 300
+        default: 5
 
 permissions:
   contents: read
@@ -48,14 +51,26 @@ jobs:
           role-to-assume: ${{ env.AWS_ROLE_ARN }}
           aws-region: us-east-1
 
-      - uses: silinternational/ecs-deploy@master
+      - name: Fetch latest task definition
+        run: >
+          aws ecs describe-task-definition
+            --task-definition my-task-definition-family
+            --query taskDefinition
+            > task-definition.json
+
+      - id: task-def
+        uses: aws-actions/amazon-ecs-render-task-definition@v1
         with:
-          cluster_cmd: "--cluster"
-          cluster: ${{ inputs.cluster }}
-          image_cmd: "--image"
+          task-definition: task-definition.json
+          container-name: ${{ inputs.container-name }}
           image: ${{ inputs.image }}
-          service_name_cmd: "--service-name"
-          service_name: ${{ inputs.service_name }}
-          force_new_deployment_cmd: "--force-new-deployment"
-          timeout_cmd: "--timeout"
-          timeout: "${{ inputs.timeout }}"
+
+      - name: Deploy Amazon ECS task definition
+        uses: aws-actions/amazon-ecs-deploy-task-definition@v1
+        with:
+          task-definition: ${{ steps.task-def.outputs.task-definition }}
+          service: ${{ inputs.service-name }}
+          cluster: ${{ inputs.cluster }}
+          wait-for-service-stability: true
+          force-new-deployment: true
+          wait-for-minutes: ${{ inputs.timeout-minutes }}
