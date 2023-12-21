@@ -24962,13 +24962,19 @@ var autoScalingClient = new import_client_application_auto_scaling.ApplicationAu
 main();
 async function main() {
   try {
-    const app = core.getInput("app", { required: "true" });
-    const project = core.getInput("project", { required: "true" });
     const minString = core.getInput("min", { required: "true" });
     const maxString = core.getInput("max", { required: "true" });
     const min = parseInt(minString);
     const max = parseInt(maxString);
-    const { service, cluster } = await getWaypointResources(app, project);
+    let service = core.getInput("service-name");
+    let cluster = core.getInput("cluster");
+    if (!service || !cluster) {
+      const app = core.getInput("app");
+      const project = core.getInput("project");
+      const waypointResources = await getWaypointResources(app, project);
+      service = waypointResources.service;
+      cluster = waypointResources.cluster;
+    }
     console.log(`Registering ECS service as scalable target: ${service}`);
     const scalableTargetArn = await registerScalableTarget(service, cluster, min, max);
     console.log(`Scalable target registered: ${scalableTargetArn}`);

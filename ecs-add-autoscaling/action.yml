@@ -3,11 +3,17 @@ description: "Add autoscaling to ECS service"
 inputs:
   app:
     description: "Name of the waypoint app"
-    required: true
+    required: false
   project:
     description: "The project the app belongs to"
     required: false
     default: "cardstack"
+  service-name:
+    description: "The name of the ECS service"
+    required: false
+  cluster:
+    description: "The name of the ECS cluster"
+    required: false
   min:
     description: "Minimum value to scale to"
     required: true
