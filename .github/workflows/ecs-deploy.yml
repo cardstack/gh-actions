@@ -54,9 +54,9 @@ jobs:
       - name: Fetch latest task definition
         run: >
           aws ecs describe-task-definition
-            --task-definition my-task-definition-family
-            --query taskDefinition
-            > task-definition.json
+          --task-definition ${{ service-name }}
+          --query taskDefinition
+          > task-definition.json
 
       - id: task-def
         uses: aws-actions/amazon-ecs-render-task-definition@v1
