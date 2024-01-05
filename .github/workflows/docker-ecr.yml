@@ -69,6 +69,7 @@ jobs:
           TAG_PREFIX="${{ steps.login-ecr.outputs.registry }}/${{ inputs.repository }}"
           echo "tag_sha=${TAG_PREFIX}:${GITHUB_SHA::7}" >> $GITHUB_OUTPUT
           echo "tag_env=${TAG_PREFIX}:${{ inputs.environment }}" >> $GITHUB_OUTPUT
+          echo "tag_latest=${TAG_PREFIX}:latest" >> $GITHUB_OUTPUT
 
       - name: Build and push
         uses: docker/build-push-action@v5
@@ -80,6 +81,6 @@ jobs:
           cache-to: type=gha,mode=max
           platforms: ${{ inputs.platforms }}
           tags: |
-            latest
+            ${{ steps.tags.outputs.tag_latest }}
             ${{ steps.tags.outputs.tag_sha }}
             ${{ steps.tags.outputs.tag_env }}
