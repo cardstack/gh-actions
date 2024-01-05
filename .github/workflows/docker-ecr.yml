@@ -80,5 +80,6 @@ jobs:
           cache-to: type=gha,mode=max
           platforms: ${{ inputs.platforms }}
           tags: |
+            latest
             ${{ steps.tags.outputs.tag_sha }}
             ${{ steps.tags.outputs.tag_env }}
