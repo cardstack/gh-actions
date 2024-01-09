@@ -1,6 +1,6 @@
 import * as core from "@actions/core";
 import { getExecOutput as exec } from "@actions/exec";
-import { ECSClient } from "@aws-sdk/client-ecs";
+import { ECSClient, UpdateServiceCommand } from "@aws-sdk/client-ecs";
 
 let ecsClient = new ECSClient();
 
