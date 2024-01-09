@@ -1,0 +1,13 @@
+name: Restart a Waypoint ECS Service
+description: "Restart Waypoint ECS Service"
+inputs:
+  app:
+    description: "Name of the waypoint app"
+    required: true
+  project:
+    description: "The project the app belongs to"
+    required: false
+    default: "cardstack"
+runs:
+  using: "node16"
+  main: "dist/index.js"
