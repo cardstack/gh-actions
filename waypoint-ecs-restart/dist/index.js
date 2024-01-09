@@ -45935,14 +45935,14 @@ async function getWaypointResources(app, project) {
   return result;
 }
 async function restartService(cluster, service) {
-  console.log(`Updating service: ${service}`);
+  console.log(`Forcing new deployment: ${service}`);
   const command = new import_client_ecs.UpdateServiceCommand({
     cluster,
     service,
     forceNewDeployment: true
   });
   await ecsClient.send(command);
-  console.log(`Service updated: ${service}`);
+  console.log(`New deployment started: ${service}`);
 }
 /*! Bundled license information:
 
