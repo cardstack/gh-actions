@@ -41,6 +41,7 @@ jobs:
     outputs:
       tag_sha: ${{ steps.this.outputs.tag_sha }}
     steps:
+      - uses: actions/checkout@v3
       - id: this
         uses: cardstack/gh-actions/docker-ecr@main
         with:

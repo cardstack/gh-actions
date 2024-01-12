@@ -22,6 +22,7 @@ inputs:
   platforms:
     required: false
     description: "Target platform"
+    default: "linux/amd64"
 
 outputs:
   image:
@@ -31,7 +32,6 @@ outputs:
 runs:
   using: composite
   steps:
-    - uses: actions/checkout@v3
     - uses: docker/setup-buildx-action@v3
 
     - name: Set up env
