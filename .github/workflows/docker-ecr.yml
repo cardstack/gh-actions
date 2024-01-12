@@ -24,7 +24,7 @@ on:
         required: false
         type: string
     outputs:
-      image:
+      tag_sha:
         description: "Final image tag"
         value: ${{ jobs.build.outputs.tag_sha }}
 
