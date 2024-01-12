@@ -45,6 +45,7 @@ jobs:
       - id: this
         uses: cardstack/gh-actions/docker-ecr@main
         with:
+          environment: ${{ inputs.environment }}
           repository: ${{ inputs.repository }}
           entrypoint: ${{ inputs.entrypoint }}
           dockerfile: ${{ inputs.dockerfile }}
