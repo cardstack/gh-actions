@@ -1,0 +1,55 @@
+name: Force new deployment for a service in ECS
+
+on:
+  workflow_call:
+    inputs:
+      environment:
+        required: true
+        type: string
+      cluster:
+        required: true
+        type: string
+      service-name:
+        required: true
+        type: string
+      wait-service-stable:
+        required: false
+        type: boolean
+        default: true
+
+permissions:
+  contents: read
+  id-token: write
+
+jobs:
+  deploy:
+    name: Deploy
+    runs-on: ubuntu-latest
+    concurrency:
+      group: ecs-force-new-deployment-${{ inputs.environment }}-${{ github.head_ref || github.run_id }}
+    steps:
+      - name: Set up env
+        run: |
+          if [ "${{ inputs.environment }}" = "production" ]; then
+            echo "AWS_ROLE_ARN=arn:aws:iam::120317779495:role/github" >> $GITHUB_ENV
+          elif [ "${{ inputs.environment }}" = "staging" ]; then
+            echo "AWS_ROLE_ARN=arn:aws:iam::680542703984:role/github" >> $GITHUB_ENV
+          else
+            echo "unrecognized environment"
+            exit 1;
+          fi
+
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v3
+        with:
+          role-to-assume: ${{ env.AWS_ROLE_ARN }}
+          aws-region: us-east-1
+
+      - name: Force new deployment
+        run: |
+          aws ecs update-service --cluster ${{ inputs.cluster }} --service ${{ inputs.service-name }} --force-new-deployment
+
+      - name: Wait service stable
+        if: ${{ inputs.wait-service-stable }}
+        run: |
+          aws ecs wait services-stable --cluster ${{ inputs.cluster }} --services ${{ inputs.service-name }}

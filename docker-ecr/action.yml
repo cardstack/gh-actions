@@ -1,0 +1,78 @@
+name: Docker AWS ECR
+description: Build docker image and push to AWS ECR
+
+inputs:
+  repository:
+    required: true
+    description: "Name of the ECR repository"
+  environment:
+    required: true
+    description: "Deployment environment"
+  dockerfile:
+    required: false
+    default: "Dockerfile"
+    description: "Path to Dockerfile"
+  context:
+    required: false
+    default: "."
+    description: "Docker build context"
+  build-args:
+    required: false
+    description: "Docker build args"
+  platforms:
+    required: false
+    description: "Target platform"
+
+outputs:
+  image:
+    description: "Final image tag"
+    value: ${{ steps.tags.outputs.tag_sha }}
+
+runs:
+  using: composite
+  steps:
+    - uses: actions/checkout@v3
+    - uses: docker/setup-buildx-action@v3
+
+    - name: Set up env
+      shell: bash
+      run: |
+        if [ "${{ inputs.environment }}" = "production" ]; then
+          echo "AWS_ROLE_ARN=arn:aws:iam::120317779495:role/github" >> $GITHUB_ENV
+        elif [ "${{ inputs.environment }}" = "staging" ]; then
+          echo "AWS_ROLE_ARN=arn:aws:iam::680542703984:role/github" >> $GITHUB_ENV
+        else
+          echo "unrecognized environment"
+          exit 1;
+        fi
+
+    - name: Configure AWS credentials
+      uses: aws-actions/configure-aws-credentials@v3
+      with:
+        role-to-assume: ${{ env.AWS_ROLE_ARN }}
+        aws-region: us-east-1
+
+    - id: login-ecr
+      uses: aws-actions/amazon-ecr-login@v2
+
+    - id: tags
+      shell: bash
+      run: |
+        TAG_PREFIX="${{ steps.login-ecr.outputs.registry }}/${{ inputs.repository }}"
+        echo "tag_sha=${TAG_PREFIX}:${GITHUB_SHA::7}" >> $GITHUB_OUTPUT
+        echo "tag_env=${TAG_PREFIX}:${{ inputs.environment }}" >> $GITHUB_OUTPUT
+        echo "tag_latest=${TAG_PREFIX}:latest" >> $GITHUB_OUTPUT
+
+    - name: Build and push
+      uses: docker/build-push-action@v5
+      with:
+        context: ${{ inputs.context }}
+        file: ${{ inputs.dockerfile }}
+        push: true
+        cache-from: type=gha
+        cache-to: type=gha,mode=max
+        platforms: ${{ inputs.platforms }}
+        tags: |
+          ${{ steps.tags.outputs.tag_latest }}
+          ${{ steps.tags.outputs.tag_sha }}
+          ${{ steps.tags.outputs.tag_env }}
