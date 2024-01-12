@@ -25,7 +25,7 @@ inputs:
     default: "linux/amd64"
 
 outputs:
-  image:
+  tag_sha:
     description: "Final image tag"
     value: ${{ steps.tags.outputs.tag_sha }}
 
