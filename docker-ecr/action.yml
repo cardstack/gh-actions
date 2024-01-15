@@ -72,6 +72,7 @@ runs:
         cache-from: type=gha
         cache-to: type=gha,mode=max
         platforms: ${{ inputs.platforms }}
+        build-args: ${{ inputs.build-args }}
         tags: |
           ${{ steps.tags.outputs.tag_latest }}
           ${{ steps.tags.outputs.tag_sha }}
