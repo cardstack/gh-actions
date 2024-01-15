@@ -32,7 +32,7 @@ jobs:
     name: Deploy
     runs-on: ubuntu-latest
     concurrency:
-      group: ecs-deploy-${{ inputs.repository }}-${{ inputs.environment }}-${{ github.head_ref || github.run_id }}
+      group: ecs-deploy-${{ inputs.service-name }}-${{ inputs.environment }}-${{ github.head_ref || github.run_id }}
     steps:
       - name: Set up env
         run: |
