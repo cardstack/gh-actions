@@ -47,7 +47,6 @@ jobs:
         with:
           environment: ${{ inputs.environment }}
           repository: ${{ inputs.repository }}
-          entrypoint: ${{ inputs.entrypoint }}
           dockerfile: ${{ inputs.dockerfile }}
           context: ${{ inputs.context }}
           build-args: ${{ inputs.build-args }}
