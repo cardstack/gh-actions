@@ -34,12 +34,12 @@ jobs:
       group: waypoint-build-${{ inputs.app }}-${{ inputs.environment }}-${{ github.head_ref || github.run_id }}
       cancel-in-progress: true
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
         if: ${{ ! inputs.restore-mtime }}
 
       # for certain packages that requires timestamp during their build step
       # https://github.com/cardstack/boxel/pull/276
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
         if: ${{ inputs.restore-mtime }}
         with:
           fetch-depth: 0

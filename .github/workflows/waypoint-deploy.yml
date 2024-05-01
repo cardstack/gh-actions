@@ -44,7 +44,7 @@ jobs:
     runs-on: ubuntu-latest
     concurrency: waypoint-deploy-${{ inputs.app }}-${{ inputs.environment }}
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
 
       - name: Init
         if: ${{ inputs.init }}

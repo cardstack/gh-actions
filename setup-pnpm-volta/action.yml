@@ -17,6 +17,6 @@ runs:
       run: |
         echo "PNPM_VERSION=${{ fromJson(steps.package-json.outputs.package-json).volta.pnpm }}" >> $GITHUB_ENV
 
-    - uses: pnpm/action-setup@v2
+    - uses: pnpm/action-setup@v3
       with:
         version: ${{ env.PNPM_VERSION }}
