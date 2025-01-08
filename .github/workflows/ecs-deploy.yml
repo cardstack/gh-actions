@@ -22,6 +22,10 @@ on:
         required: false
         type: number
         default: 5
+      wait-for-service-stability:
+        required: false
+        type: boolean
+        default: true
 
 permissions:
   contents: read
@@ -71,6 +75,6 @@ jobs:
           task-definition: ${{ steps.task-def.outputs.task-definition }}
           service: ${{ inputs.service-name }}
           cluster: ${{ inputs.cluster }}
-          wait-for-service-stability: true
+          wait-for-service-stability: ${{ inputs.wait-for-service-stability }}
           force-new-deployment: true
           wait-for-minutes: ${{ inputs.timeout-minutes }}
