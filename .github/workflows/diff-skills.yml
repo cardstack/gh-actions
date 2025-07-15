@@ -143,7 +143,7 @@ jobs:
         run: |
           echo "eh"
           cat ${{ steps.process-changes.outputs.diff_file }}
-          DIFF_COMMENT=$(cat ${{ steps.process-changes.outputs.diff_file }})
+          DIFF_COMMENT=$(echo ${{ steps.process-changes.outputs.diff_file }})
 
           echo "Diff content?"
           echo $DIFF_CONTENT
