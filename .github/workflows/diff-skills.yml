@@ -136,15 +136,11 @@ jobs:
         with:
           name: ${{ steps.process-changes.outputs.artifact_name }}
           path: ${{ steps.process-changes.outputs.diff_file }}
-        outputs:
-          artifact-id: ${{ steps.upload-artifact.outputs.artifact-id }}
 
       - name: Truncate comment if needed
         id: store-comment
         if: steps.process-changes.outputs.diff_file != ''
-        needs: upload-artifact
         run: |
-
           # Create truncated content for comment
           if [[ ${#DIFF_CONTENT} -gt 60000 ]]; then
             TRUNCATED_CONTENT="TRUNCATED: see [artifact](https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}/artifacts/${{ steps.upload-artifact.outputs.artifact-id }}) for full diff
