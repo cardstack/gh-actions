@@ -141,6 +141,11 @@ jobs:
         id: store-comment
         if: steps.process-changes.outputs.diff_file != ''
         run: |
+          DIFF_COMMENT=$(cat ${{ steps.process-changes.outputs.diff_file }})
+
+          echo "Diff content?"
+          echo $DIFF_CONTENT
+
           # Create truncated content for comment
           if [[ ${#DIFF_CONTENT} -gt 60000 ]]; then
             TRUNCATED_CONTENT="TRUNCATED: see [artifact](https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}/artifacts/${{ steps.upload-artifact.outputs.artifact-id }}) for full diff
