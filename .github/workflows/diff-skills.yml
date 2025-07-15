@@ -148,7 +148,8 @@ jobs:
 
           # Create truncated content for comment
           if [[ ${#DIFF_CONTENT} -gt 60000 ]]; then
-            TRUNCATED_CONTENT="TRUNCATED: see [artifact](https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}/artifacts/${{ steps.upload-artifact.outputs.artifact-id }}) for full diff
+            TRUNCATED_CONTENT="# :warning: TRUNCATED
+            see [artifact](https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}/artifacts/${{ steps.upload-artifact.outputs.artifact-id }}) for full diff
 
             ${DIFF_CONTENT:0:60000}"
           else
