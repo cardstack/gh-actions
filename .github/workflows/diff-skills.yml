@@ -141,9 +141,7 @@ jobs:
         id: store-comment
         if: steps.process-changes.outputs.diff_file != ''
         run: |
-          echo "eh"
-          cat ${{ steps.process-changes.outputs.diff_file }}
-          DIFF_COMMENT=$(cat "${{ steps.process-changes.outputs.diff_file }}")
+          DIFF_CONTENT=$(cat "${{ steps.process-changes.outputs.diff_file }}")
 
           echo "Diff content?"
           echo $DIFF_CONTENT
