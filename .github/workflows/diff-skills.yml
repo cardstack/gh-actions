@@ -122,26 +122,43 @@ jobs:
             diff_file="$RUNNER_TEMP/skill-card-diff.md"   # $RUNNER_TEMP survives the job
             printf '%s\n' "$DIFF_CONTENT" > "$diff_file"
 
-            # Create truncated content for comment
-            if [[ ${#DIFF_CONTENT} -gt 60000 ]]; then
-              TRUNCATED_CONTENT="TRUNCATED: see artifact for full diff
-
-              ${DIFF_CONTENT:0:60000}"
-            else
-              TRUNCATED_CONTENT="$DIFF_CONTENT"
-            fi
-
-            # Write maybe-truncated content to a separate file
-            diff_comment_file="$RUNNER_TEMP/skill-card-diff-comment.md"
-            printf '%s\n' "$TRUNCATED_CONTENT" > "$diff_comment_file"
-
             echo "diff_file=$diff_file" >> "$GITHUB_OUTPUT"
-            echo "diff_comment=$diff_comment_file" >> "$GITHUB_OUTPUT"
 
             # Remove slashes and other forbidden characters from artifact name
             artifact_name=$(echo -n "$FILE" | sed -e 's/[ \t:\/\\"<>|*?]/-/g' -e 's/--*/-/g')
             echo "artifact_name=$artifact_name" >> "$GITHUB_OUTPUT"
           fi
+
+      - name: Upload artifact if there are changes
+        id: upload-artifact
+        if: steps.process-changes.outputs.diff_file != ''
+        uses: actions/upload-artifact@v4
+        with:
+          name: ${{ steps.process-changes.outputs.artifact_name }}
+          path: ${{ steps.process-changes.outputs.diff_file }}
+        outputs:
+          artifact-id: ${{ steps.upload-artifact.outputs.artifact-id }}
+
+      - name: Truncate comment if needed
+        id: store-comment
+        if: steps.process-changes.outputs.diff_file != ''
+        needs: upload-artifact
+        run: |
+
+          # Create truncated content for comment
+          if [[ ${#DIFF_CONTENT} -gt 60000 ]]; then
+            TRUNCATED_CONTENT="TRUNCATED: see [artifact](https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}/artifacts/${{ steps.upload-artifact.outputs.artifact-id }}) for full diff
+
+            ${DIFF_CONTENT:0:60000}"
+          else
+            TRUNCATED_CONTENT="$DIFF_CONTENT"
+          fi
+
+          # Write maybe-truncated content to a separate file
+          diff_comment_file="$RUNNER_TEMP/skill-card-diff-comment.md"
+          printf '%s\n' "$TRUNCATED_CONTENT" > "$diff_comment_file"
+
+          echo "diff_comment=$diff_comment_file" >> "$GITHUB_OUTPUT"
 
       - name: Create comment if there are changes
         if: steps.process-changes.outputs.diff_file != ''
@@ -149,11 +166,4 @@ jobs:
         uses: marocchino/sticky-pull-request-comment@d2ad0de260ae8b0235ce059e63f2949ba9e05943 # 2.9.3
         with:
           header: ${{ matrix.file }} diff
-          path: ${{ steps.process-changes.outputs.diff_comment }}
-
-      - name: Upload artifact if there are changes
-        if: steps.process-changes.outputs.diff_file != ''
-        uses: actions/upload-artifact@v4
-        with:
-          name: ${{ steps.process-changes.outputs.artifact_name }}
-          path: ${{ steps.process-changes.outputs.diff_file }}
+          path: ${{ steps.store-comment.outputs.diff_comment }}
