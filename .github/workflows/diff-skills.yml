@@ -27,10 +27,6 @@ jobs:
           matrix: true
           base_sha: ${{ github.event.pull_request.base.sha }}
 
-      - name: Print output
-        run: |
-          echo "${{ fromJSON(steps.changed-files.outputs.all_changed_files) }}"
-
   post-diffs:
     needs: find-changed-skills
     if: ${{ needs.find-changed-skills.outputs.files != '[]' }}
