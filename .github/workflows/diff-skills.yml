@@ -29,7 +29,7 @@ jobs:
 
       - name: Print output
         run: |
-          echo "${{ fromJSON(steps.find-changed-skills.outputs.files) }}"
+          echo "${{ fromJSON(steps.changed-files.outputs.all_changed_files) }}"
 
   post-diffs:
     needs: find-changed-skills
