@@ -14,14 +14,14 @@ jobs:
     outputs:
       files: ${{ steps.changed-files.outputs.all_changed_files }}
     steps:
-      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # 4.2.2
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
         with:
           fetch-depth: 0 # Required for git diff to work properly
           ref: ${{ github.event.pull_request.base.ref }} # Checkout the target branch first
 
       - name: Find changed JSON files
         id: changed-files
-        uses: tj-actions/changed-files@2f7c5bfce28377bc069a65ba478de0a74aa0ca32 # 46.0.1
+        uses: tj-actions/changed-files@9426d40962ed5378910ee2e21d5f8c6fcbf2dd96 # v47.0.6
         with:
           files: "**/*.json"
           matrix: true
@@ -34,7 +34,7 @@ jobs:
       matrix:
         file: ${{ fromJSON(needs.find-changed-skills.outputs.files) }}
     steps:
-      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # 4.2.2
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
         if: contains(matrix.file, 'skill')
         with:
           fetch-depth: 0 # Required for git diff to work properly
@@ -129,7 +129,7 @@ jobs:
       - name: Upload artifact if there are changes
         id: upload-artifact
         if: steps.process-changes.outputs.diff_file != ''
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
         with:
           name: ${{ steps.process-changes.outputs.artifact_name }}
           path: ${{ steps.process-changes.outputs.diff_file }}
@@ -159,7 +159,7 @@ jobs:
       - name: Create comment if there are changes
         if: steps.process-changes.outputs.diff_file != ''
         continue-on-error: true
-        uses: marocchino/sticky-pull-request-comment@d2ad0de260ae8b0235ce059e63f2949ba9e05943 # 2.9.3
+        uses: marocchino/sticky-pull-request-comment@0ea0beb66eb9baf113663a64ec522f60e49231c0 # v3.0.4
         with:
           header: ${{ matrix.file }} diff
           path: ${{ steps.store-comment.outputs.diff_comment }}
