@@ -81,7 +81,7 @@ jobs:
           # Without a cap the SDK waiter backs off toward its 600s default
           # maximum, and once the next delay would overrun wait-for-minutes it
           # reports TIMEOUT immediately instead of polling until the deadline.
-          # A rollout still settling after its seventh poll then fails after
-          # as little as 1.5 minutes. A fixed 15s interval lets the wait use
-          # the full timeout-minutes.
+          # With timeout-minutes of 10 or less, a rollout still settling after
+          # its seventh poll then fails after as little as 1.5 minutes. A fixed
+          # 15s interval lets the wait use the full timeout-minutes.
           wait-max-delay-seconds: 15
