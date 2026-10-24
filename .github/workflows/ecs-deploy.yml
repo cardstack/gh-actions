@@ -78,3 +78,10 @@ jobs:
           wait-for-service-stability: ${{ inputs.wait-for-service-stability }}
           force-new-deployment: true
           wait-for-minutes: ${{ inputs.timeout-minutes }}
+          # Without a cap the SDK waiter backs off toward its 600s default
+          # maximum, and once the next delay would overrun wait-for-minutes it
+          # reports TIMEOUT immediately instead of polling until the deadline.
+          # A rollout still settling after its seventh poll then fails after
+          # as little as 1.5 minutes. A fixed 15s interval lets the wait use
+          # the full timeout-minutes.
+          wait-max-delay-seconds: 15
