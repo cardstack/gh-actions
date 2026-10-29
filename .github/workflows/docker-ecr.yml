@@ -21,12 +21,26 @@ on:
         required: false
         type: string
       platforms:
+        description: >-
+          Comma-separated target platforms. With more than one, each platform
+          builds on its own native runner (see runner-amd64 / runner-arm64)
+          and the results are joined into one multi-arch image.
         required: false
         type: string
+      runner-amd64:
+        description: Runner for the linux/amd64 build of a multi-platform image.
+        required: false
+        type: string
+        default: "ubuntu-latest"
+      runner-arm64:
+        description: Runner for the linux/arm64 build of a multi-platform image.
+        required: false
+        type: string
+        default: "ubuntu-24.04-arm"
     outputs:
       image:
         description: "Final image tag"
-        value: ${{ jobs.build.outputs.tag_sha }}
+        value: ${{ jobs.build.outputs.tag_sha || jobs.merge.outputs.tag_sha }}
 
 permissions:
   contents: read
@@ -35,6 +49,7 @@ permissions:
 jobs:
   build:
     name: Build
+    if: ${{ !contains(inputs.platforms, ',') }}
     runs-on: ubuntu-latest
     concurrency:
       group: docker-ecr-build-${{ inputs.repository }}-${{ inputs.environment }}-${{ github.head_ref || github.run_id }}
@@ -51,3 +66,97 @@ jobs:
           context: ${{ inputs.context }}
           build-args: ${{ inputs.build-args }}
           platforms: ${{ inputs.platforms }}
+
+  # A multi-platform image builds each platform natively instead of under
+  # QEMU emulation, which is many times slower for a Node build.
+  plan:
+    name: Plan platform builds
+    if: ${{ contains(inputs.platforms, ',') }}
+    runs-on: ubuntu-latest
+    outputs:
+      matrix: ${{ steps.plan.outputs.matrix }}
+    steps:
+      - id: plan
+        env:
+          PLATFORMS: ${{ inputs.platforms }}
+          RUNNER_AMD64: ${{ inputs.runner-amd64 }}
+          RUNNER_ARM64: ${{ inputs.runner-arm64 }}
+        run: |
+          entries=()
+          IFS=',' read -ra platforms <<< "$PLATFORMS"
+          for platform in "${platforms[@]}"; do
+            platform="$(echo "$platform" | xargs)"
+            [ -z "$platform" ] && continue
+            arch="${platform##*/}"
+            case "$arch" in
+              amd64) runner="$RUNNER_AMD64" ;;
+              arm64) runner="$RUNNER_ARM64" ;;
+              *) echo "::error::No runner for platform $platform"; exit 1 ;;
+            esac
+            entries+=("$(jq -cn --arg p "$platform" --arg a "$arch" --arg r "$runner" \
+              '{platform: $p, arch: $a, runner: $r}')")
+          done
+          echo "matrix=$(printf '%s\n' "${entries[@]}" | jq -cs '{include: .}')" >> "$GITHUB_OUTPUT"
+
+  build-platform:
+    name: Build ${{ matrix.platform }}
+    needs: plan
+    strategy:
+      matrix: ${{ fromJSON(needs.plan.outputs.matrix) }}
+    runs-on: ${{ matrix.runner }}
+    concurrency:
+      group: docker-ecr-build-${{ inputs.repository }}-${{ inputs.environment }}-${{ matrix.arch }}-${{ github.head_ref || github.run_id }}
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+      - id: this
+        uses: cardstack/gh-actions/docker-ecr@main
+        with:
+          environment: ${{ inputs.environment }}
+          repository: ${{ inputs.repository }}
+          dockerfile: ${{ inputs.dockerfile }}
+          context: ${{ inputs.context }}
+          build-args: ${{ inputs.build-args }}
+          platforms: ${{ matrix.platform }}
+          push-by-digest: "true"
+      - name: Save digest
+        env:
+          DIGEST: ${{ steps.this.outputs.digest }}
+        run: |
+          mkdir -p "$RUNNER_TEMP/digests"
+          echo "$DIGEST" > "$RUNNER_TEMP/digests/${{ matrix.arch }}"
+      # The caller can build several images in one run, so the artifact name
+      # includes the repository.
+      - uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        with:
+          name: docker-ecr-digest-${{ inputs.repository }}-${{ matrix.arch }}
+          path: ${{ runner.temp }}/digests/${{ matrix.arch }}
+          retention-days: 1
+          overwrite: true
+
+  merge:
+    name: Push multi-arch image
+    needs: build-platform
+    runs-on: ubuntu-latest
+    concurrency:
+      group: docker-ecr-merge-${{ inputs.repository }}-${{ inputs.environment }}-${{ github.head_ref || github.run_id }}
+    outputs:
+      tag_sha: ${{ steps.this.outputs.tag_sha }}
+    steps:
+      - uses: actions/download-artifact@9000827ccba6bdab643e8b6fd33ac0654aef8333 # v8.0.2
+        with:
+          pattern: docker-ecr-digest-${{ inputs.repository }}-*
+          path: ${{ runner.temp }}/digests
+          merge-multiple: true
+      - id: digests
+        run: |
+          {
+            echo "list<<EOF"
+            cat "$RUNNER_TEMP"/digests/*
+            echo "EOF"
+          } >> "$GITHUB_OUTPUT"
+      - id: this
+        uses: cardstack/gh-actions/docker-ecr@main
+        with:
+          environment: ${{ inputs.environment }}
+          repository: ${{ inputs.repository }}
+          merge-digests: ${{ steps.digests.outputs.list }}

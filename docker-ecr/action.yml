@@ -23,11 +23,28 @@ inputs:
     required: false
     description: "Target platform"
     default: "linux/amd64"
+  push-by-digest:
+    required: false
+    default: "false"
+    description: >-
+      "true" pushes the image for the single platform in `platforms` by digest
+      only, with no tags, and sets the `digest` output. Used to build each
+      platform of a multi-arch image on its own native runner.
+  merge-digests:
+    required: false
+    default: ""
+    description: >-
+      Image digests (one per line) that earlier push-by-digest runs pushed to
+      this repository. When set, nothing is built: the digests are joined into
+      one multi-arch image under the usual tags.
 
 outputs:
   tag_sha:
     description: "Final image tag"
     value: ${{ steps.tags.outputs.tag_sha }}
+  digest:
+    description: "Image digest, set when push-by-digest is true"
+    value: ${{ steps.build-by-digest.outputs.digest }}
 
 runs:
   using: composite
@@ -57,14 +74,27 @@ runs:
 
     - id: tags
       shell: bash
+      env:
+        PUSH_BY_DIGEST: ${{ inputs.push-by-digest }}
+        PLATFORMS: ${{ inputs.platforms }}
       run: |
         TAG_PREFIX="${{ steps.login-ecr.outputs.registry }}/${{ inputs.repository }}"
+        echo "tag_prefix=${TAG_PREFIX}" >> $GITHUB_OUTPUT
         echo "tag_sha=${TAG_PREFIX}:${GITHUB_SHA::7}" >> $GITHUB_OUTPUT
         echo "tag_env=${TAG_PREFIX}:${{ inputs.environment }}" >> $GITHUB_OUTPUT
         echo "tag_latest=${TAG_PREFIX}:latest" >> $GITHUB_OUTPUT
-        echo "tag_buildcache=${TAG_PREFIX}:buildcache" >> $GITHUB_OUTPUT
+        # A per-platform build keeps its own cache, so the platforms don't
+        # overwrite each other's. amd64 keeps the `:buildcache` tag that
+        # single-platform builds already fill.
+        ARCH="${PLATFORMS##*/}"
+        if [ "$PUSH_BY_DIGEST" = "true" ] && [ "$ARCH" != "amd64" ]; then
+          echo "tag_buildcache=${TAG_PREFIX}:buildcache-${ARCH}" >> $GITHUB_OUTPUT
+        else
+          echo "tag_buildcache=${TAG_PREFIX}:buildcache" >> $GITHUB_OUTPUT
+        fi
 
     - name: Build and push
+      if: ${{ inputs.push-by-digest != 'true' && inputs.merge-digests == '' }}
       uses: docker/build-push-action@bcafcacb16a39f128d818304e6c9c0c18556b85f # v7.1.0
       with:
         context: ${{ inputs.context }}
@@ -85,3 +115,36 @@ runs:
           ${{ steps.tags.outputs.tag_latest }}
           ${{ steps.tags.outputs.tag_sha }}
           ${{ steps.tags.outputs.tag_env }}
+
+    - name: Build and push by digest
+      id: build-by-digest
+      if: ${{ inputs.push-by-digest == 'true' }}
+      uses: docker/build-push-action@bcafcacb16a39f128d818304e6c9c0c18556b85f # v7.1.0
+      with:
+        context: ${{ inputs.context }}
+        file: ${{ inputs.dockerfile }}
+        # The cache options match "Build and push" above.
+        cache-from: type=registry,ref=${{ steps.tags.outputs.tag_buildcache }}
+        cache-to: type=registry,ref=${{ steps.tags.outputs.tag_buildcache }},mode=max,image-manifest=true,oci-mediatypes=true,ignore-error=true
+        platforms: ${{ inputs.platforms }}
+        build-args: ${{ inputs.build-args }}
+        outputs: type=image,name=${{ steps.tags.outputs.tag_prefix }},push-by-digest=true,name-canonical=true,push=true
+
+    - name: Push multi-arch image
+      if: ${{ inputs.merge-digests != '' }}
+      shell: bash
+      env:
+        TAG_PREFIX: ${{ steps.tags.outputs.tag_prefix }}
+        TAG_LATEST: ${{ steps.tags.outputs.tag_latest }}
+        TAG_SHA: ${{ steps.tags.outputs.tag_sha }}
+        TAG_ENV: ${{ steps.tags.outputs.tag_env }}
+        DIGESTS: ${{ inputs.merge-digests }}
+      run: |
+        sources=()
+        while read -r digest; do
+          [ -n "$digest" ] && sources+=("${TAG_PREFIX}@${digest}")
+        done <<< "$DIGESTS"
+        docker buildx imagetools create \
+          -t "$TAG_LATEST" -t "$TAG_SHA" -t "$TAG_ENV" \
+          "${sources[@]}"
+        docker buildx imagetools inspect "$TAG_SHA"
