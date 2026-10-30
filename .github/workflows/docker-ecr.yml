@@ -22,18 +22,19 @@ on:
         type: string
       platforms:
         description: >-
-          Comma-separated target platforms. With more than one, each platform
-          builds on its own native runner (see runner-amd64 / runner-arm64)
-          and the results are joined into one multi-arch image.
+          Comma-separated target platforms. Empty or "linux/amd64" builds on
+          ubuntu-latest. Any other value builds each platform on its own
+          native runner (see runner-amd64 / runner-arm64) and joins the
+          results into one image.
         required: false
         type: string
       runner-amd64:
-        description: Runner for the linux/amd64 build of a multi-platform image.
+        description: Runner for the linux/amd64 build of a native-runner image.
         required: false
         type: string
         default: "ubuntu-latest"
       runner-arm64:
-        description: Runner for the linux/arm64 build of a multi-platform image.
+        description: Runner for the linux/arm64 build of a native-runner image.
         required: false
         type: string
         default: "ubuntu-24.04-arm"
@@ -49,7 +50,7 @@ permissions:
 jobs:
   build:
     name: Build
-    if: ${{ !contains(inputs.platforms, ',') }}
+    if: ${{ inputs.platforms == '' || inputs.platforms == 'linux/amd64' }}
     runs-on: ubuntu-latest
     concurrency:
       group: docker-ecr-build-${{ inputs.repository }}-${{ inputs.environment }}-${{ github.head_ref || github.run_id }}
@@ -67,36 +68,61 @@ jobs:
           build-args: ${{ inputs.build-args }}
           platforms: ${{ inputs.platforms }}
 
-  # A multi-platform image builds each platform natively instead of under
+  # Every other platform list builds each platform natively instead of under
   # QEMU emulation, which is many times slower for a Node build.
   plan:
     name: Plan platform builds
-    if: ${{ contains(inputs.platforms, ',') }}
+    if: ${{ inputs.platforms != '' && inputs.platforms != 'linux/amd64' }}
     runs-on: ubuntu-latest
     outputs:
       matrix: ${{ steps.plan.outputs.matrix }}
+      count: ${{ steps.plan.outputs.count }}
+      artifact-prefix: ${{ steps.plan.outputs.artifact-prefix }}
     steps:
       - id: plan
         env:
           PLATFORMS: ${{ inputs.platforms }}
+          REPOSITORY: ${{ inputs.repository }}
+          ENVIRONMENT: ${{ inputs.environment }}
           RUNNER_AMD64: ${{ inputs.runner-amd64 }}
           RUNNER_ARM64: ${{ inputs.runner-arm64 }}
         run: |
+          # Artifact names can't contain "/". ECR repository names never hold
+          # two separators in a row, so "__" for "/" and "--" between the
+          # parts keep each repository's prefix from matching another's.
+          prefix="docker-ecr-digest--${ENVIRONMENT}--${REPOSITORY//\//__}"
+          seen=" "
           entries=()
           IFS=',' read -ra platforms <<< "$PLATFORMS"
           for platform in "${platforms[@]}"; do
             platform="$(echo "$platform" | xargs)"
             [ -z "$platform" ] && continue
-            arch="${platform##*/}"
+            # os/arch[/variant]
+            arch="$(echo "$platform" | cut -d/ -f2)"
             case "$arch" in
               amd64) runner="$RUNNER_AMD64" ;;
               arm64) runner="$RUNNER_ARM64" ;;
               *) echo "::error::No runner for platform $platform"; exit 1 ;;
             esac
+            case "$seen" in
+              *" $arch "*)
+                echo "::error::platforms names $arch more than once: $PLATFORMS"
+                exit 1 ;;
+            esac
+            seen="${seen}${arch} "
             entries+=("$(jq -cn --arg p "$platform" --arg a "$arch" --arg r "$runner" \
-              '{platform: $p, arch: $a, runner: $r}')")
+              --arg n "${prefix}--${arch}" \
+              '{platform: $p, arch: $a, runner: $r, artifact: $n}')")
           done
-          echo "matrix=$(printf '%s\n' "${entries[@]}" | jq -cs '{include: .}')" >> "$GITHUB_OUTPUT"
+          if [ ${#entries[@]} -eq 0 ]; then
+            echo "::error::platforms names no platform: '$PLATFORMS'"
+            exit 1
+          fi
+          {
+            echo "matrix=$(printf '%s\n' "${entries[@]}" | jq -cs '{include: .}')"
+            echo "count=${#entries[@]}"
+            echo "artifact-prefix=${prefix}"
+          } >> "$GITHUB_OUTPUT"
 
   build-platform:
     name: Build ${{ matrix.platform }}
@@ -124,18 +150,16 @@ jobs:
         run: |
           mkdir -p "$RUNNER_TEMP/digests"
           echo "$DIGEST" > "$RUNNER_TEMP/digests/${{ matrix.arch }}"
-      # The caller can build several images in one run, so the artifact name
-      # includes the repository.
       - uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
         with:
-          name: docker-ecr-digest-${{ inputs.repository }}-${{ matrix.arch }}
+          name: ${{ matrix.artifact }}
           path: ${{ runner.temp }}/digests/${{ matrix.arch }}
           retention-days: 1
           overwrite: true
 
   merge:
     name: Push multi-arch image
-    needs: build-platform
+    needs: [plan, build-platform]
     runs-on: ubuntu-latest
     concurrency:
       group: docker-ecr-merge-${{ inputs.repository }}-${{ inputs.environment }}-${{ github.head_ref || github.run_id }}
@@ -144,11 +168,18 @@ jobs:
     steps:
       - uses: actions/download-artifact@9000827ccba6bdab643e8b6fd33ac0654aef8333 # v8.0.2
         with:
-          pattern: docker-ecr-digest-${{ inputs.repository }}-*
+          pattern: ${{ needs.plan.outputs.artifact-prefix }}--*
           path: ${{ runner.temp }}/digests
           merge-multiple: true
       - id: digests
+        env:
+          EXPECTED: ${{ needs.plan.outputs.count }}
         run: |
+          found="$(find "$RUNNER_TEMP/digests" -type f | wc -l | xargs)"
+          if [ "$found" != "$EXPECTED" ]; then
+            echo "::error::Expected $EXPECTED platform digests, found $found"
+            exit 1
+          fi
           {
             echo "list<<EOF"
             cat "$RUNNER_TEMP"/digests/*
