@@ -59,7 +59,7 @@ jobs:
     steps:
       - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
       - id: this
-        uses: cardstack/gh-actions/docker-ecr@cs-14517-native-arm64-image-builds
+        uses: cardstack/gh-actions/docker-ecr@main
         with:
           environment: ${{ inputs.environment }}
           repository: ${{ inputs.repository }}
@@ -135,7 +135,7 @@ jobs:
     steps:
       - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
       - id: this
-        uses: cardstack/gh-actions/docker-ecr@cs-14517-native-arm64-image-builds
+        uses: cardstack/gh-actions/docker-ecr@main
         with:
           environment: ${{ inputs.environment }}
           repository: ${{ inputs.repository }}
@@ -186,7 +186,7 @@ jobs:
             echo "EOF"
           } >> "$GITHUB_OUTPUT"
       - id: this
-        uses: cardstack/gh-actions/docker-ecr@cs-14517-native-arm64-image-builds
+        uses: cardstack/gh-actions/docker-ecr@main
         with:
           environment: ${{ inputs.environment }}
           repository: ${{ inputs.repository }}
